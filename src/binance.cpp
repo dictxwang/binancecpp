@@ -33,10 +33,10 @@ namespace binance {
         if(curl != nullptr) {
 
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str() );
-            // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_cb);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlCallback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str_result );
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
-            curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip");
+            // curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip");
 
             // Bind the request to a specific local IP or network interface
             if (!localIP.empty()) {
@@ -70,8 +70,8 @@ namespace binance {
             }
 
             // TODO Enable SSL/TLS verification
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); // Verify the server's certificate
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L); // Verify the hostname
+            // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); // Verify the server's certificate
+            // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L); // Verify the hostname
 
             res = curl_easy_perform(curl);
         }

@@ -50,6 +50,12 @@ namespace binance {
         }
     }
 
+    static size_t curlCallback(void* contents, size_t size, size_t nmemb, std::string* userData) {
+        size_t totalSize = size * nmemb;
+        userData->append(static_cast<char*>(contents), totalSize);
+        return totalSize;
+    }
+
     class BinanceRestClient {
         public:
             // Constructor

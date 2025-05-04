@@ -13,7 +13,7 @@ namespace binance {
         BinanceRestClient::init(apiKey, secretKey, MarketType::SPOT, useInternal);
     }
 
-    void BinanceSpotRestClient::get_exchangeInfo(binance::CommonRestResponse<binance::ExchangeInfoResponse> &response) {
+    void BinanceSpotRestClient::get_exchangeInfo(binance::CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response) {
         Json::Reader reader;
         std::string url = baseUrl + "/api/v3/exchangeInfo";
         // TODO Initialize libcurl
@@ -28,30 +28,46 @@ namespace binance {
             try {
                 Json::Value json_result;
                 Json::Reader reader;
-                json_result.clear();	
+                json_result.clear();
                 reader.parse(str_result , json_result);
                 
-                // parse json to 
+                // parse json to model
                 if (json_result.isMember("symbols")) {
                     Json::Value symbols = json_result["symbols"];
                     for (int i = 0; i < symbols.size(); i++) {
-                        ExchangeInfo exchangeInfo;
+                        SpotExchangeInfo exchangeInfo;
                         exchangeInfo.symbol = symbols[i]["symbol"].asString();
                         exchangeInfo.status = symbols[i]["status"].asString();
                         exchangeInfo.baseAsset = symbols[i]["baseAsset"].asString();
                         exchangeInfo.quoteAsset = symbols[i]["quoteAsset"].asString();
-                        exchangeInfo.minPrice = symbols[i]["filters"][0]["minPrice"].asDouble();
-                        exchangeInfo.maxPrice = symbols[i]["filters"][0]["maxPrice"].asDouble();
-                        exchangeInfo.tickSize = symbols[i]["filters"][0]["tickSize"].asDouble();
-                        exchangeInfo.stepSize = symbols[i]["filters"][0]["stepSize"].asDouble();
-                        response.data.symbols.push_back(exchangeInfo);
+                        if (symbols[i].isMember("filters")) {
+                            for (int j = 0; j < symbols[i]["filters"].size(); j++) {
+                                if (symbols[i]["filters"][j].isMember("filterType")) {
+                                    if (symbols[i]["filters"][j]["filterType"].asString() == "PRICE_FILTER") {
+                                        exchangeInfo.minPrice = std::stod(symbols[i]["filters"][j]["minPrice"].asString());
+                                        exchangeInfo.maxPrice = std::stod(symbols[i]["filters"][j]["maxPrice"].asString());
+                                        exchangeInfo.tickSize = std::stod(symbols[i]["filters"][j]["tickSize"].asString());
+                                    } else if (symbols[i]["filters"][j]["filterType"].asString() == "LOT_SIZE") {
+                                        exchangeInfo.minQty = std::stod(symbols[i]["filters"][j]["minQty"].asString());
+                                        exchangeInfo.maxQty = std::stod(symbols[i]["filters"][j]["maxQty"].asString());
+                                        exchangeInfo.stepSize = std::stod(symbols[i]["filters"][j]["stepSize"].asString());
+                                    }
+                                }
+                            }
+                        }
+                        response.data.push_back(exchangeInfo);
                     }
+                    response.code = 0;
                 }
             } catch (std::exception &e ) {
+                response.code = -900;
+                response.msg = "parse json error: " + std::string(e.what());
                 throw e;
             }
         } else {
             // notthing to parse
+            response.code = -100;
+            response.msg = "no response content";
         }
 
         if (curl != nullptr) {

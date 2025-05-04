@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <vector>
 #include <map>
-#include "binancecpp/string_helper.h"
+#include "binancecpp/util/string_helper.h"
 
 /**
 * a simple buffer class base on vector 

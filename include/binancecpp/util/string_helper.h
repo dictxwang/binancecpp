@@ -1,5 +1,5 @@
-#ifndef _STRING_HELPER_H_
-#define _STRING_HELPER_H_
+#ifndef _UTIL_STRING_HELPER_H_
+#define _UTIL_STRING_HELPER_H_
 
 #include <cstring>
 #include <string>

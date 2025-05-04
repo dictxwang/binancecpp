@@ -1,4 +1,5 @@
-#include "include/binance_spot.h"
+#include "binancecpp/binance_spot.h"
+#include "binancecpp/json/json.h"
 
 namespace binance {
 
@@ -13,6 +14,7 @@ namespace binance {
     }
 
     void BinanceSpotRestClient::getExchangeInfo() {
+        Json::Reader reader;
         std::string url = baseUrl + "/api/v3/exchangeInfo";
         // Initialize libcurl
         curl_global_init(CURL_GLOBAL_DEFAULT);

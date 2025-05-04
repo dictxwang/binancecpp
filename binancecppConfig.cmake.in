@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+
+include(CMakeFindDependencyMacro)
+find_dependency(CURL)
+
+set(config_targets_file @config_targets_file@)
+
+include("${CMAKE_CURRENT_LIST_DIR}/${config_targets_file}")
+#include("${CMAKE_CURRENT_LIST_DIR}/binancecppTargets.cmake")
+
+check_required_components(binancecpp)

@@ -1,39 +1,78 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(PROJECT_NAME "cpp_binance")
-set(PROCESS_MAIN "process_main")
+project(binancecpp VERSION 0.1.0 LANGUAGES CXX)
+
+set(PROJECT_NAME "binancecpp" VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
-# set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
+# set(CMAKE_BUILD_TYPE "Debug")
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    include
-    src
-    lib/jsoncpp-1.8.3/include
-)
-
-# Find OpenSSL
-find_package(OpenSSL REQUIRED)
 # Find Curl
-find_package(CURL REQUIRED)
+# find_package(CURL REQUIRED)
+include(CMakeFindDependencyMacro)
+find_dependency(CURL REQUIRED)
 
-# message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
-# message(STATUS "CMAKE_CURRENT_LIB_DIR: ${CMAKE_CURRENT_LIB_DIR}")
 
-# config
 FILE(GLOB_RECURSE LIB_BINANCE_SRC RELATIVE ${CMAKE_SOURCE_DIR}
-    "src/binance*.cpp")
-add_library(binance ${LIB_BINANCE_SRC})
+    "src/*.cpp")
+add_library(binancecpp ${LIB_BINANCE_SRC})
 
-add_executable(${PROCESS_MAIN} "src/main.cpp")
-# Include headers
-target_include_directories(${PROCESS_MAIN} PRIVATE ${CURL_INCLUDE_DIR})
-target_include_directories(${PROCESS_MAIN} PRIVATE ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(${PROCESS_MAIN}
-    PRIVATE OpenSSL::SSL OpenSSL::Crypto
-    PRIVATE CURL::libcurl
-    binance
+# add_subdirectory(lib/jsoncpp-1.8.3)
+# target_compile_definitions(binancecpp PUBLIC "JSONCPP")
+
+# # Specify include directories
+target_include_directories(binancecpp PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
+target_link_libraries(binancecpp
+    PUBLIC CURL::libcurl
+)
+
+# Set library properties
+set_target_properties(binancecpp PROPERTIES
+    VERSION 0.1.0
+    SOVERSION 1
+    INTERFACE_LINK_LIBRARIES "CURL::libcurl"
+)
+
+# Install your library
+install(TARGETS binancecpp
+    EXPORT binancecppTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    PUBLIC_HEADER DESTINATION include/binancecpp
+)
+
+# Install the export set
+install(EXPORT binancecppTargets
+    FILE binancecppTargets.cmake
+    NAMESPACE binancecpp::
+    DESTINATION lib/cmake/binancecpp
+)
+
+# Generate package configuration files
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/binancecppConfigVersion.cmake"
+    VERSION 0.1.0
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/binancecppConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/binancecppConfig.cmake" @ONLY
+)
+
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/binancecppConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/binancecppConfigVersion.cmake"
+    DESTINATION lib/cmake/binancecpp
+)
+
+# get_property(libraries TARGET binancecpp PROPERTY INTERFACE_LINK_LIBRARIES)
+# message(STATUS ">>>>> INTERFACE_LINK_LIBRARIES for LibraryA: ${libraries}")

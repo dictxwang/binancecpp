@@ -1,1 +1,1 @@
-# cpp-binance
+# binancecpp

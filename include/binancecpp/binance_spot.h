@@ -18,7 +18,7 @@ namespace binance {
 
     public:
         // Public methods
-        void getExchangeInfo();
+        void get_exchangeInfo(binance::CommonRestResponse<binance::ExchangeInfoResponse> &response);
         void init(const std::string& apiKey, const std::string& secretKey, bool useInternal = false);
     };
 }

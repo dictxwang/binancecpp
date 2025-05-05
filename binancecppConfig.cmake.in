@@ -3,6 +3,7 @@
 
 include(CMakeFindDependencyMacro)
 find_dependency(CURL)
+find_dependency(OpenSSL)
 
 set(config_targets_file @config_targets_file@)
 

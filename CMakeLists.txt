@@ -11,8 +11,12 @@ set(CMAKE_BUILD_TYPE "Release")
 
 # Find Curl
 # find_package(CURL REQUIRED)
+# Find OpenSSL
+# find_package(OpenSSL REQUIRED)
 include(CMakeFindDependencyMacro)
 find_dependency(CURL REQUIRED)
+# Find OpenSSL
+find_dependency(OpenSSL REQUIRED)
 
 
 FILE(GLOB_RECURSE LIB_BINANCE_SRC RELATIVE ${CMAKE_SOURCE_DIR}
@@ -29,6 +33,7 @@ target_include_directories(binancecpp PUBLIC
 )
 target_link_libraries(binancecpp
     PUBLIC CURL::libcurl
+    PUBLIC OpenSSL::SSL OpenSSL::Crypto
 )
 
 # Set library properties
@@ -36,6 +41,8 @@ set_target_properties(binancecpp PROPERTIES
     VERSION 0.1.0
     SOVERSION 1
     INTERFACE_LINK_LIBRARIES "CURL::libcurl"
+    INTERFACE_LINK_LIBRARIES "OpenSSL::SSL"
+    INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto"
 )
 
 # Install your library

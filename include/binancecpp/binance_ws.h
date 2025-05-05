@@ -13,25 +13,25 @@ namespace binance {
 
     const int WEBSOCKET_HEADER_MIN_SIZE = 5;
 
-    const triple<string, int, string> SPOT_WS_ENDPOINT = triple(str("stream.binance.com"), 9443, str("/ws"));
-    const triple<string, int, string> SPOT_COMBINE_WS_ENDPOINT = triple(str("stream.binance.com"), 9443, str("/stream?streams="));
-    const triple<string, int, string> SPOT_TRADING_WS_ENDPOINT = triple(str("ws-api.binance.com"), 443, str("/v3?returnRateLimits=false"));
+    const triple<string, int, string> SPOT_WS_ENDPOINT = triple(string("stream.binance.com"), 9443, string("/ws"));
+    const triple<string, int, string> SPOT_COMBINE_WS_ENDPOINT = triple(string("stream.binance.com"), 9443, string("/stream?streams="));
+    const triple<string, int, string> SPOT_TRADING_WS_ENDPOINT = triple(string("ws-api.binance.com"), 443, string("/v3?returnRateLimits=false"));
 
     
-    const triple<string, int, string> DELIVERY_WS_ENDPOINT = triple(str("dstream.binance.com"), 9443, str("/ws"));
-    const triple<string, int, string> DELIVERY_COMBINE_WS_ENDPOINT = triple(str("dstream.binance.com"), 443, str("/stream?streams="));
-    const triple<string, int, string> DELIVERY_INTERNAL_WS_ENDPOINT = triple(str("dstream-mm.binance.com"), 443, str("/ws"));
-    const triple<string, int, string> DELIVERY_INTERNAL_COMBINE_WS_ENDPOINT = triple(str("dstream-mm.binance.com"), 443, str("/stream?streams="));
+    const triple<string, int, string> DELIVERY_WS_ENDPOINT = triple(string("dstream.binance.com"), 9443, string("/ws"));
+    const triple<string, int, string> DELIVERY_COMBINE_WS_ENDPOINT = triple(string("dstream.binance.com"), 443, string("/stream?streams="));
+    const triple<string, int, string> DELIVERY_INTERNAL_WS_ENDPOINT = triple(string("dstream-mm.binance.com"), 443, string("/ws"));
+    const triple<string, int, string> DELIVERY_INTERNAL_COMBINE_WS_ENDPOINT = triple(string("dstream-mm.binance.com"), 443, string("/stream?streams="));
 
-    const triple<string, int, string> FUTURES_WS_ENDPOINT = triple(str("fstream.binance.com"), 443, str("/ws"));
-    const triple<string, int, string> FUTURES_COMBINE_WS_ENDPOINT = triple(str("fstream.binance.com"), 443, str("/stream?streams="));
-    const triple<string, int, string> FUTURES_TRADING_WS_ENDPOINT = triple(str("ws-fapi.binance.com"), 443, str("/ws-fapi/v1?returnRateLimits=false"));
-    const triple<string, int, string> FUTURES_INTERNAL_WS_ENDPOINT = triple(str("fstream-mm.binance.com"), 443, str("/ws"));
-    const triple<string, int, string> FUTURES_INTERNAL_COMBINE_WS_ENDPOINT = triple(str("fstream-mm.binance.com"), 443, str("/stream?streams="));
-    const triple<string, int, string> FUTURES_INTERNAL_TRADING_WS_ENDPOINT = triple(str("ws-fapi-mm.binance.com"), 443, str("/ws-fapi/v1?returnRateLimits=false"));
+    const triple<string, int, string> FUTURES_WS_ENDPOINT = triple(string("fstream.binance.com"), 443, string("/ws"));
+    const triple<string, int, string> FUTURES_COMBINE_WS_ENDPOINT = triple(string("fstream.binance.com"), 443, string("/stream?streams="));
+    const triple<string, int, string> FUTURES_TRADING_WS_ENDPOINT = triple(string("ws-fapi.binance.com"), 443, string("/ws-fapi/v1?returnRateLimits=false"));
+    const triple<string, int, string> FUTURES_INTERNAL_WS_ENDPOINT = triple(string("fstream-mm.binance.com"), 443, string("/ws"));
+    const triple<string, int, string> FUTURES_INTERNAL_COMBINE_WS_ENDPOINT = triple(string("fstream-mm.binance.com"), 443, string("/stream?streams="));
+    const triple<string, int, string> FUTURES_INTERNAL_TRADING_WS_ENDPOINT = triple(string("ws-fapi-mm.binance.com"), 443, string("/ws-fapi/v1?returnRateLimits=false"));
 
-    const triple<string, int, string> OPTIONS_WS_ENDPOINT = triple(str(""), 0, str("")); // not available
-    const triple<string, int, string> PORTFOLIO_WS_ENDPOINT = triple(str("fstream.binance.com"), 443, str("/pm/ws"));
+    const triple<string, int, string> OPTIONS_WS_ENDPOINT = triple(string(""), 0, string("")); // not available
+    const triple<string, int, string> PORTFOLIO_WS_ENDPOINT = triple(string("fstream.binance.com"), 443, string("/pm/ws"));
 
     static triple<string, int, string> getWsBaseEndpoint(MarketType marketType, bool useInternal) {
         switch (marketType) {
@@ -54,7 +54,7 @@ namespace binance {
             case PORTFOLIO:
                 return PORTFOLIO_WS_ENDPOINT;
             default:
-                return triple(str(""), 0, str(""));
+                return triple(string(""), 0, string(""));
         }
     }
 
@@ -79,7 +79,7 @@ namespace binance {
             case PORTFOLIO:
                 return PORTFOLIO_WS_ENDPOINT;
             default:
-                return triple(str(""), 0, str(""));
+                return triple(string(""), 0, string(""));
         }
     }
 
@@ -94,7 +94,7 @@ namespace binance {
                     return FUTURES_TRADING_WS_ENDPOINT;
                 }
             default:
-                return triple(str(""), 0, str(""));
+                return triple(string(""), 0, string(""));
         }
     }
 

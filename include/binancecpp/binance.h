@@ -12,6 +12,7 @@ namespace binance {
     const std::pair<std::string, std::string> FUTURES_API_URL = {"https://fapi.binance.com", "fapi.binance.com"};
     const std::pair<std::string, std::string> FUTURES_INTERNAL_API_URL = {"https://fapi-mm.binance.com", "fapi-mm.binance.com"};
     const std::pair<std::string, std::string> OPTIONS_API_URL = {"https://eapi.binance.com", "eapi.binance.com"};
+    const std::pair<std::string, std::string> DELIVERY_API_URL = {"https://dapi.binance.com", "dapi.binance.com"};
     const std::pair<std::string, std::string> PORTFOLIO_API_URL = {"https://papi.binance.com", "papi.binance.com"};
 
     enum MarketType {
@@ -42,7 +43,7 @@ namespace binance {
             case OPTIONS:
                 return OPTIONS_API_URL;
             case DELIVERY:
-                return FUTURES_API_URL;
+                return DELIVERY_API_URL;
             case PORTFOLIO:
                 return PORTFOLIO_API_URL;
             default:
@@ -50,7 +51,7 @@ namespace binance {
         }
     }
 
-    static size_t curlCallback(void* contents, size_t size, size_t nmemb, std::string* userData) {
+    static size_t curl_write_callback(void* contents, size_t size, size_t nmemb, std::string* userData) {
         size_t totalSize = size * nmemb;
         userData->append(static_cast<char*>(contents), totalSize);
         return totalSize;

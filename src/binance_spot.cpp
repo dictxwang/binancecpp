@@ -3,12 +3,6 @@
 
 namespace binance {
 
-    size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userData) {
-        size_t totalSize = size * nmemb;
-        userData->append(static_cast<char*>(contents), totalSize);
-        return totalSize;
-    }
-
     void BinanceSpotRestClient::init(const std::string& apiKey, const std::string& secretKey, bool useInternal) {
         BinanceRestClient::init(apiKey, secretKey, MarketType::SPOT, useInternal);
     }

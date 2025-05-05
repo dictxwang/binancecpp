@@ -33,7 +33,7 @@ namespace binance {
         if(curl != nullptr) {
 
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str() );
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlCallback);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_callback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str_result );
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
             // curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip");

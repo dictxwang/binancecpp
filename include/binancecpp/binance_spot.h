@@ -2,7 +2,6 @@
 #define _BINANCE_SPOT_H_
 
 #include "binance.h"
-#include <iostream>
 
 namespace binance {
     

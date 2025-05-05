@@ -19,6 +19,9 @@ public:
     template <typename T, typename S> 
     static const T valueOf(const S &a);
 
+    static std::string toLower(std::string& str);
+    static std::string toUpper(std::string& str);
+
 };
 
 template <typename TYPE> inline
@@ -70,5 +73,20 @@ const T strHelper::valueOf(const S& a)
     return t;
 }
 
+std::string strHelper::toUpper(std::string& str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), [](char& c){
+        return std::toupper(c);
+    });
+	return str;
+}
+ 
+std::string strHelper::toLower(std::string& str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), [](char& c){
+        return std::tolower(c);
+    });
+	return str;
+}
 
 #endif /* _UTIL_STRING_HELPER_H_ */

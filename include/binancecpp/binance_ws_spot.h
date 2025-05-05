@@ -11,7 +11,7 @@ namespace binance {
         BinanceSpotWsClient() {}
         ~BinanceSpotWsClient() {}
     
-        void initBookTicker(bool useInternal, bool useCombine, std::vector<std::string>& symbols);
+        void initBookTicker(bool useInternal, bool useCombine);
         bool startBookTicker(WS_CB customCallback, std::vector<std::string>& symbols);
 
     protected:

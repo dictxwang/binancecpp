@@ -73,6 +73,7 @@ const T strHelper::valueOf(const S& a)
     return t;
 }
 
+inline
 std::string strHelper::toUpper(std::string& str)
 {
     std::transform(str.begin(), str.end(), str.begin(), [](char& c){
@@ -80,7 +81,8 @@ std::string strHelper::toUpper(std::string& str)
     });
 	return str;
 }
- 
+
+inline
 std::string strHelper::toLower(std::string& str)
 {
     std::transform(str.begin(), str.end(), str.begin(), [](char& c){

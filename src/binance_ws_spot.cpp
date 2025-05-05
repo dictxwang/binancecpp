@@ -2,7 +2,7 @@
 
 namespace binance {
 
-    void BinanceSpotWsClient::initBookTicker(bool useInternal, bool useCombine, std::vector<std::string>& symbols) {
+    void BinanceSpotWsClient::initBookTicker(bool useInternal, bool useCombine) {
 
         BinanceWsClient::init("","", MarketType::SPOT, useInternal, useCombine, false);
     }

@@ -200,4 +200,107 @@ namespace binance {
         }
     }
 
+    void BinanceSpotRestClient::start_userDataStream(CommonRestResponse<std::string> &response) {
+        std::string url = this->baseUrl + "/api/v3/userDataStream";
+        
+        std::vector<std::string> extra_http_header;
+        std::string header_chunk("X-MBX-APIKEY: ");
+        header_chunk.append(this->apiKey);
+        extra_http_header.push_back(header_chunk);
+
+        std::string post_data = "";
+        std::string action = "POST";
+        
+        CURL* curl = curl_easy_init();
+        CURLcode res;
+        std::string str_result;
+
+        try {
+            res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
+        } catch (std::exception &e) {
+            response.code = -500;
+            response.msg = "parse json error: " + std::string(e.what());
+            if (curl != nullptr) {
+                curl_easy_cleanup(curl);
+            }
+            return;
+        }
+
+        if (str_result.size() > 0 ) {
+            // std::cout << "curl response text: " << str_result << std::endl;
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(str_result , json_result);
+
+            if (parse_api_has_error(json_result, response)) {
+                if (curl != nullptr) {
+                    curl_easy_cleanup(curl);
+                }
+                return;
+            }
+
+            if (json_result.isMember("listenKey")) {
+                response.data = json_result["listenKey"].asString();
+            }
+        } else {
+            // notthing to parse
+            response.code = -100;
+            response.msg = "no response content";
+        }
+
+        if (curl != nullptr) {
+            curl_easy_cleanup(curl);
+        }
+    }
+
+    void BinanceSpotRestClient::keep_userDataStream(const std::string listenKey, CommonRestResponse<std::string> &response) {
+        std::string url = this->baseUrl + "/api/v3/userDataStream";
+        
+        std::vector<std::string> extra_http_header;
+        std::string header_chunk("X-MBX-APIKEY: ");
+        header_chunk.append(this->apiKey);
+        extra_http_header.push_back(header_chunk);
+
+        std::string post_data = ("listenKey=" + listenKey);
+        std::string action = "PUT";
+        
+        CURL* curl = curl_easy_init();
+        CURLcode res;
+        std::string str_result;
+
+        try {
+            res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
+        } catch (std::exception &e) {
+            response.code = -500;
+            response.msg = "parse json error: " + std::string(e.what());
+            if (curl != nullptr) {
+                curl_easy_cleanup(curl);
+            }
+            return;
+        }
+
+        if (str_result.size() > 0 ) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(str_result , json_result);
+
+            if (parse_api_has_error(json_result, response)) {
+                if (curl != nullptr) {
+                    curl_easy_cleanup(curl);
+                }
+                return;
+            }
+        } else {
+            // notthing to parse
+            response.code = -100;
+            response.msg = "no response content";
+        }
+
+        if (curl != nullptr) {
+            curl_easy_cleanup(curl);
+        }
+    }
+
 } // namespace binance

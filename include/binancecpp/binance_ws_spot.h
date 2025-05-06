@@ -14,6 +14,9 @@ namespace binance {
         void initBookTicker(bool useInternal, bool useCombine);
         bool startBookTicker(WS_CB customCallback, std::vector<std::string>& symbols);
 
+        void initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal);
+        bool startUserDataStream(WS_CB customCallback, std::string listenKey);
+
     protected:
         // std::string make_subscribe_frame(std::vector<std::string> &params) override;
     };

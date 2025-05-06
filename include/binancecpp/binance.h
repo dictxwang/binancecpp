@@ -46,6 +46,21 @@ namespace binance {
         return totalSize;
     }
 
+    template <typename T>
+    static bool parse_api_has_error(Json::Value& json_value, CommonRestResponse<T> &response) {
+        if (json_value.isMember("code")) {
+            int code = json_value["code"].asInt();
+            if (code != 0) {
+                response.code = code;
+                if (json_value.isMember("msg")) {
+                    response.msg = json_value["msg"].asString();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
     class BinanceRestClient {
         public:
             // Constructor

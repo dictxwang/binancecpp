@@ -44,6 +44,13 @@ namespace binance {
                 Json::Reader reader;
                 json_result.clear();
                 reader.parse(str_result , json_result);
+
+                if (parse_api_has_error(json_result, response)) {
+                    if (curl != nullptr) {
+                        curl_easy_cleanup(curl);
+                    }
+                    return;
+                }
                 
                 // parse json to model
                 if (json_result.isMember("symbols")) {
@@ -112,6 +119,7 @@ namespace binance {
         std::string str_result;
 
         try {
+            // std::cout << "request signature= " << signature << std::endl;
             res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
         } catch (std::exception &e) {
             response.code = -500;
@@ -124,10 +132,18 @@ namespace binance {
 
         if (str_result.size() > 0 ) {
             try {
+                // std::cout << "curl response text: " << str_result << std::endl;
                 Json::Value json_result;
                 Json::Reader reader;
                 json_result.clear();
                 reader.parse(str_result , json_result);
+
+                if (parse_api_has_error(json_result, response)) {
+                    if (curl != nullptr) {
+                        curl_easy_cleanup(curl);
+                    }
+                    return;
+                }
 
                 SpotAccount account;
                 account.makerCommission = json_result["makerCommission"].asInt();
@@ -167,6 +183,8 @@ namespace binance {
                     }
                 }
                 account.uid = json_result["uid"].asUInt64();
+
+                response.data = account;
             } catch (std::exception &e) {
                 response.code = -900;
                 response.msg = "parse json error: " + std::string(e.what());
@@ -180,7 +198,6 @@ namespace binance {
         if (curl != nullptr) {
             curl_easy_cleanup(curl);
         }
-
     }
 
 } // namespace binance

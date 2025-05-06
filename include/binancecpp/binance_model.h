@@ -8,7 +8,7 @@ namespace binance {
     template <typename T>
     struct CommonRestResponse {
         T data;
-        int code;
+        int code = 0;
         std::string msg;
     };
 

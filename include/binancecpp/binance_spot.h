@@ -19,6 +19,7 @@ namespace binance {
         // Public methods
         void init(const std::string& apiKey, const std::string& secretKey, bool useInternal = false);
         void get_exchangeInfo(std::vector<std::string>& symbols, CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response);
+        void get_account(CommonRestResponse<binance::SpotAccount> &response);
     };
 }
 #endif

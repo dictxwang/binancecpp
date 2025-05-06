@@ -7,6 +7,7 @@
 #include "binance_enum.h"
 #include "json/json.h"
 #include "util/common_tool.h"
+#include "util/binance_tool.h"
 #include "util/string_helper.h"
 
 namespace binance {

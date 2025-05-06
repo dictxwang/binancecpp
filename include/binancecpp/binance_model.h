@@ -25,9 +25,36 @@ namespace binance {
         double stepSize;
     };
 
-    // struct SpotAccount {
-    //     int makerCommission;
-    //     size_t
-    // }
+    struct CommissionRates {
+        double maker;
+        double taker;
+        double buyer;
+        double seller;
+    };
+
+    struct BalanceLite {
+        std::string asset;
+        double free;
+        double locked;
+    };
+
+    struct SpotAccount {
+        int makerCommission;
+        int takerCommission;
+        int buyerCommission;
+        int sellerCommission;
+        CommissionRates commissionRates;
+        bool canTrade;
+        bool canWithdraw;
+        bool canDeposit;
+        bool brokered;
+        bool requireSelfTradePrevention;
+        bool preventSor;
+        unsigned long updateTime;
+        std::string accountType;
+        std::vector<BalanceLite> balances;
+        std::vector<std::string> permissions;
+        unsigned long uid;
+    };
 }
 #endif

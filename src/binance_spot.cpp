@@ -8,7 +8,6 @@ namespace binance {
     }
 
     void BinanceSpotRestClient::get_exchangeInfo(std::vector<std::string>& instIds, CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response) {
-        Json::Reader reader;
         std::string url = baseUrl + "/api/v3/exchangeInfo";
         if (instIds.size() > 0) {
             url.append("?");
@@ -27,7 +26,17 @@ namespace binance {
     
         CURLcode res;
         std::string str_result;
-        res = curl_api(curl, url, str_result);
+
+        try {
+            res = curl_api(curl, url, str_result);
+        } catch (std::exception &e) {
+            response.code = -500;
+            response.msg = "parse json error: " + std::string(e.what());
+            if (curl != nullptr) {
+                curl_easy_cleanup(curl);
+            }
+            return;
+        }
 
         if (str_result.size() > 0 ) {
             try {
@@ -67,7 +76,6 @@ namespace binance {
             } catch (std::exception &e ) {
                 response.code = -900;
                 response.msg = "parse json error: " + std::string(e.what());
-                throw e;
             }
         } else {
             // notthing to parse
@@ -79,4 +87,100 @@ namespace binance {
             curl_easy_cleanup(curl);
         }
     }
+
+    void BinanceSpotRestClient::get_account(CommonRestResponse<binance::SpotAccount> &response) {
+        std::string url = this->baseUrl + "/api/v3/account?";
+
+        std::string querystring("timestamp=");
+        querystring.append(std::to_string( get_current_ms_epoch()));
+
+        std::string signature = hmac_sha256(this->secretKey.c_str() , querystring.c_str());
+        querystring.append("&signature=");
+        querystring.append(signature);
+
+        url.append( querystring );
+        std::vector<std::string> extra_http_header;
+        std::string header_chunk("X-MBX-APIKEY: ");
+        header_chunk.append(this->apiKey);
+        extra_http_header.push_back(header_chunk);
+
+        std::string post_data = "";
+        std::string action = "GET";
+        
+        CURL* curl = curl_easy_init();
+        CURLcode res;
+        std::string str_result;
+
+        try {
+            res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
+        } catch (std::exception &e) {
+            response.code = -500;
+            response.msg = "parse json error: " + std::string(e.what());
+            if (curl != nullptr) {
+                curl_easy_cleanup(curl);
+            }
+            return;
+        }
+
+        if (str_result.size() > 0 ) {
+            try {
+                Json::Value json_result;
+                Json::Reader reader;
+                json_result.clear();
+                reader.parse(str_result , json_result);
+
+                SpotAccount account;
+                account.makerCommission = json_result["makerCommission"].asInt();
+                account.takerCommission = json_result["takerCommission"].asInt();
+                account.buyerCommission = json_result["buyerCommission"].asInt();
+                account.sellerCommission = json_result["sellerCommission"].asInt();
+                if (json_result.isMember("commissionRates")) {
+                    CommissionRates commissionRates;
+                    commissionRates.maker = str_to_dobule(json_result["commissionRates"]["maker"]);
+                    commissionRates.taker = str_to_dobule(json_result["commissionRates"]["taker"]);
+                    commissionRates.buyer = str_to_dobule(json_result["commissionRates"]["buyer"]);
+                    commissionRates.seller = str_to_dobule(json_result["commissionRates"]["seller"]);
+                    account.commissionRates = commissionRates;
+                }
+                account.canTrade = json_result["canTrade"].asBool();
+                account.canWithdraw = json_result["canWithdraw"].asBool();
+                account.canDeposit = json_result["canDeposit"].asBool();
+                account.brokered = json_result["brokered"].asBool();
+                account.requireSelfTradePrevention = json_result["requireSelfTradePrevention"].asBool();
+                account.preventSor = json_result["preventSor"].asBool();
+                account.updateTime = json_result["updateTime"].asUInt64();
+                account.accountType = json_result["accountType"].asString();
+                if (json_result.isMember("balances")) {
+                    Json::Value balances = json_result["balances"];
+                    for (int i = 0; i < balances.size(); i++) {
+                        BalanceLite lite;
+                        lite.asset = balances[i]["asset"].asString();
+                        lite.free = str_to_dobule(balances[i]["free"]);
+                        lite.locked = str_to_dobule(balances[i]["locked"]);
+                        account.balances.push_back(lite);
+                    }
+                }
+                if (json_result.isMember("permissions")) {
+                    Json::Value permissions = json_result["permissions"];
+                    for (int i = 0; i < permissions.size(); i++) {
+                        account.permissions.push_back(permissions[i].asString());
+                    }
+                }
+                account.uid = json_result["uid"].asUInt64();
+            } catch (std::exception &e) {
+                response.code = -900;
+                response.msg = "parse json error: " + std::string(e.what());
+            }
+        } else {
+            // notthing to parse
+            response.code = -100;
+            response.msg = "no response content";
+        }
+
+        if (curl != nullptr) {
+            curl_easy_cleanup(curl);
+        }
+
+    }
+
 } // namespace binance

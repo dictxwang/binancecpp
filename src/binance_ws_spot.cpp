@@ -28,7 +28,11 @@ namespace binance {
             index++;
         }
         subscribe_msg += "]}";
+
         result = this->send_subscribe(subscribe_msg);
+        // Another message pakcage
+        // subscribe_msg = "\x81" + std::string(1, subscribe_msg.size()) + subscribe_msg; // Simplified frame
+        // result = this->send_subscribe(subscribe_msg);
         if (!result) {
             return result;
         }

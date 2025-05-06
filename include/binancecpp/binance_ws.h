@@ -138,7 +138,7 @@ namespace binance {
         void init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal, bool useCombine, bool useTrading);
         // virtual std::string make_subscribe_frame(std::vector<std::string> &params);
         bool connect_endpoint(std::string& handshakePath);
-        bool send_subscribe(std::string& subscribeFrame);
+        bool send_subscribe(std::string& payload);
 		bool start_event_loop(WS_CB customCallback);
         bool process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer);
         void release_resource();

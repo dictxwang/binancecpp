@@ -44,7 +44,7 @@ namespace binance {
 
         // Step 2: Perform the WebSocket handshake
         try {
-            perform_websocket_handshake(ssl, this->wsEndpoint.first, handshakePath);
+            perform_websocket_handshake(this->ssl, this->wsEndpoint.first, handshakePath);
         } catch (std::exception &e) {
             throw e;
         }
@@ -52,13 +52,20 @@ namespace binance {
         return true;
     }
 
-    bool BinanceWsClient::send_subscribe(std::string& subscribeFrame) {
+    bool BinanceWsClient::send_subscribe(std::string& payload) {
 
-        if (subscribeFrame.size() == 0) {
-            throw std::runtime_error("subscribe framme is empty");
+        if (payload.length() == 0) {
+            throw std::runtime_error("subscribe payload is empty");
         }
 
-        int writeLength = SSL_write(this->ssl, subscribeFrame.c_str(), subscribeFrame.size());
+        WebSocketPacket packet;
+        packet.set_fin(1);
+        packet.set_opcode(WebSocketPacket::WSOpcode_Text);
+        ByteBuffer messageBuffer;
+        packet.set_payload(payload.c_str(), payload.length());
+        packet.pack_dataframe(messageBuffer);
+        int writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
+        // int writeLength = SSL_write(this->ssl, subscribeFrame.c_str(), subscribeFrame.size());
         if (writeLength <= 0) {
             throw std::runtime_error("failed to send subscribe frame");
         }
@@ -85,18 +92,18 @@ namespace binance {
                 int pendding_len = 0;
                 int recv_start_len = this->recvBuffer.length();
                 do {
-                    read_len = SSL_read(ssl, buffer, sizeof(buffer) - 1);
+                    read_len = SSL_read(this->ssl, buffer, sizeof(buffer) - 1);
                     if (read_len > 0) {
                         this->recvBuffer.append(buffer, read_len);
                         total_recv_len += read_len;
                     } else {
                         break;
                     }
-                    pendding_len = SSL_pending(ssl);
+                    pendding_len = SSL_pending(this->ssl);
                 } while (pendding_len > 0);
 
                 if (read_len < 0) {
-                    int err = SSL_get_error(ssl, read_len);
+                    int err = SSL_get_error(this->ssl, read_len);
                     ERR_clear_error();
                     if (err == SSL_ERROR_WANT_READ) {
                         // No data available, continue reading
@@ -146,6 +153,7 @@ namespace binance {
                 }
             } catch ( exception &e ) {
                 // TODO print exception
+                // std::cout << "Read exception: " << e.what() << std::endl;
                 break;
             }
         }

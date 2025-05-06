@@ -55,7 +55,7 @@ namespace binance {
             if ( extra_http_header.size() > 0 ) {
                 
                 struct curl_slist *chunk = nullptr;
-                for ( int i = 0 ; i < extra_http_header.size() ;i++ ) {
+                for ( size_t i = 0; i < extra_http_header.size(); ++i ) {
                     chunk = curl_slist_append(chunk, extra_http_header[i].c_str() );
                 }
                 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);

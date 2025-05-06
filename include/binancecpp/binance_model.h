@@ -24,5 +24,10 @@ namespace binance {
         double maxQty;
         double stepSize;
     };
+
+    // struct SpotAccount {
+    //     int makerCommission;
+    //     size_t
+    // }
 }
 #endif

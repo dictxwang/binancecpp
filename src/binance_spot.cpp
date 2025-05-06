@@ -15,7 +15,7 @@ namespace binance {
             if (instIds.size() == 1) {
                 url.append("symbol=").append(instIds.front());
             } else {
-                for (int i = 0; i < instIds.size(); i++) {
+                for (size_t i = 0; i < instIds.size(); ++i) {
                     instIds[i] = "\"" + instIds[i] + "\"";
                 }
                 url.append("symbols=[").append(strHelper::joinStrings(instIds, ",")).append("]");

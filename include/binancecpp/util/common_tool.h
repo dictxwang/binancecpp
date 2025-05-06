@@ -1,6 +1,8 @@
 #ifndef _UTIL_COMMON_TOOL_H_
 #define _UTIL_COMMON_TOOL_H_
 
+#include "binancecpp/json/json.h"
+
 // Define a `triple` struct
 template <typename T1, typename T2, typename T3>
 struct triple {
@@ -14,5 +16,12 @@ struct triple {
     // Default Constructor
     triple() = default;
 };
+
+namespace binance {
+
+    static double str_to_dobule(Json::Value& value) {
+        return std::stod(value.asString());
+    }
+}
 
 #endif

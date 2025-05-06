@@ -49,13 +49,13 @@ namespace binance {
                             for (int j = 0; j < symbols[i]["filters"].size(); j++) {
                                 if (symbols[i]["filters"][j].isMember("filterType")) {
                                     if (symbols[i]["filters"][j]["filterType"].asString() == "PRICE_FILTER") {
-                                        exchangeInfo.minPrice = std::stod(symbols[i]["filters"][j]["minPrice"].asString());
-                                        exchangeInfo.maxPrice = std::stod(symbols[i]["filters"][j]["maxPrice"].asString());
-                                        exchangeInfo.tickSize = std::stod(symbols[i]["filters"][j]["tickSize"].asString());
+                                        exchangeInfo.minPrice = str_to_dobule(symbols[i]["filters"][j]["minPrice"]);
+                                        exchangeInfo.maxPrice = str_to_dobule(symbols[i]["filters"][j]["maxPrice"]);
+                                        exchangeInfo.tickSize = str_to_dobule(symbols[i]["filters"][j]["tickSize"]);
                                     } else if (symbols[i]["filters"][j]["filterType"].asString() == "LOT_SIZE") {
-                                        exchangeInfo.minQty = std::stod(symbols[i]["filters"][j]["minQty"].asString());
-                                        exchangeInfo.maxQty = std::stod(symbols[i]["filters"][j]["maxQty"].asString());
-                                        exchangeInfo.stepSize = std::stod(symbols[i]["filters"][j]["stepSize"].asString());
+                                        exchangeInfo.minQty = str_to_dobule(symbols[i]["filters"][j]["minQty"]);
+                                        exchangeInfo.maxQty = str_to_dobule(symbols[i]["filters"][j]["maxQty"]);
+                                        exchangeInfo.stepSize = str_to_dobule(symbols[i]["filters"][j]["stepSize"]);
                                     }
                                 }
                             }

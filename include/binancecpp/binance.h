@@ -4,7 +4,9 @@
 #include <string>
 #include <curl/curl.h>
 #include "binance_model.h"
+#include "binance_enum.h"
 #include "json/json.h"
+#include "util/common_tool.h"
 #include "util/string_helper.h"
 
 namespace binance {
@@ -15,21 +17,6 @@ namespace binance {
     const std::pair<std::string, std::string> OPTIONS_API_URL = {"https://eapi.binance.com", "eapi.binance.com"};
     const std::pair<std::string, std::string> DELIVERY_API_URL = {"https://dapi.binance.com", "dapi.binance.com"};
     const std::pair<std::string, std::string> PORTFOLIO_API_URL = {"https://papi.binance.com", "papi.binance.com"};
-
-    enum MarketType {
-        SPOT,
-        FUTURES,
-        OPTIONS,
-        DELIVERY,
-        PORTFOLIO,
-    };
-
-    template <typename T>
-    struct CommonRestResponse {
-        T data;
-        int code;
-        std::string msg;
-    };
 
     static std::pair<std::string, std::string> getBaseUrl(MarketType marketType, bool useInternal) {
         switch (marketType) {

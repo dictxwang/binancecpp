@@ -5,6 +5,13 @@
 
 namespace binance {
 
+    template <typename T>
+    struct CommonRestResponse {
+        T data;
+        int code;
+        std::string msg;
+    };
+
     struct SpotExchangeInfo {
         std::string symbol;
         std::string status;

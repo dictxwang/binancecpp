@@ -22,6 +22,7 @@ public:
     static std::string toLower(std::string& str);
     static std::string toUpper(std::string& str);
 
+    static std::string joinStrings(const std::vector<std::string>& strings, const std::string& delimiter);
 };
 
 template <typename TYPE> inline
@@ -89,6 +90,18 @@ std::string strHelper::toLower(std::string& str)
         return std::tolower(c);
     });
 	return str;
+}
+
+inline
+std::string strHelper::joinStrings(const std::vector<std::string>& strings, const std::string& delimiter) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < strings.size(); ++i) {
+        oss << strings[i];
+        if (i != strings.size() - 1) { // Add delimiter between strings
+            oss << delimiter;
+        }
+    }
+    return oss.str();
 }
 
 #endif /* _UTIL_STRING_HELPER_H_ */

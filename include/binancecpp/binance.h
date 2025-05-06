@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 #include "binance_model.h"
 #include "json/json.h"
+#include "util/string_helper.h"
 
 namespace binance {
 
@@ -65,11 +66,14 @@ namespace binance {
             // Destructor
             virtual ~BinanceRestClient() {
             }
-    
+
+        public:
+            // Public methods
+            void setLocalIP(const std::string& localIP); // call before init if need
+            void setRemoteIP(const std::string& remoteIP); // call before init if need
+
         protected:
             // Protected methods
-            void setLocalIP(const std::string& localIP); // call before init
-            void setRemoteIP(const std::string& remoteIP); // call before init
             void init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal = false);
     
             CURLcode curl_api(CURL* curl, std::string &url, std::string &result_json );

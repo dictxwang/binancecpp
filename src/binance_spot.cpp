@@ -7,9 +7,20 @@ namespace binance {
         BinanceRestClient::init(apiKey, secretKey, MarketType::SPOT, useInternal);
     }
 
-    void BinanceSpotRestClient::get_exchangeInfo(binance::CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response) {
+    void BinanceSpotRestClient::get_exchangeInfo(std::vector<std::string>& instIds, CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response) {
         Json::Reader reader;
         std::string url = baseUrl + "/api/v3/exchangeInfo";
+        if (instIds.size() > 0) {
+            url.append("?");
+            if (instIds.size() == 1) {
+                url.append("symbol=").append(instIds.front());
+            } else {
+                for (int i = 0; i < instIds.size(); i++) {
+                    instIds[i] = "\"" + instIds[i] + "\"";
+                }
+                url.append("symbols=[").append(strHelper::joinStrings(instIds, ",")).append("]");
+            }
+        }
         // TODO Initialize libcurl
         // curl_global_init(CURL_GLOBAL_DEFAULT);
         CURL* curl = curl_easy_init();

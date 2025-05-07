@@ -1,5 +1,5 @@
-#ifndef _WS_PACKET_H
-#define _WS_PACKET_H
+#ifndef _WS_PACKET_H_
+#define _WS_PACKET_H_
 
 #include <stdint.h>
 #include <vector>

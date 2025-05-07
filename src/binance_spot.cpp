@@ -61,6 +61,11 @@ namespace binance {
                         exchangeInfo.status = symbols[i]["status"].asString();
                         exchangeInfo.baseAsset = symbols[i]["baseAsset"].asString();
                         exchangeInfo.quoteAsset = symbols[i]["quoteAsset"].asString();
+                        if (symbols[i].isMember("orderTypes")) {
+                            for (int j = 0; j < symbols[i]["orderTypes"].size(); j++) {
+                                exchangeInfo.orderTypes.push_back(symbols[i]["orderTypes"][j].asString());
+                            }
+                        }
                         if (symbols[i].isMember("filters")) {
                             for (int j = 0; j < symbols[i]["filters"].size(); j++) {
                                 if (symbols[i]["filters"][j].isMember("filterType")) {

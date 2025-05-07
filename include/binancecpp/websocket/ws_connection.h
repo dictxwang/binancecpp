@@ -1,5 +1,5 @@
-#ifndef _WS_CONNECTION_H
-#define _WS_CONNECTION_H
+#ifndef _WS_CONNECTION_H_
+#define _WS_CONNECTION_H_
 
 #include <string.h>
 #include <openssl/ssl.h>

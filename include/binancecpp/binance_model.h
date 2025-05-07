@@ -17,6 +17,7 @@ namespace binance {
         std::string status;
         std::string baseAsset;
         std::string quoteAsset;
+        std::vector<std::string> orderTypes;
         double minPrice;
         double maxPrice;
         double tickSize;
@@ -55,6 +56,23 @@ namespace binance {
         std::vector<BalanceLite> balances;
         std::vector<std::string> permissions;
         unsigned long uid;
+    };
+
+    struct FuturesExchangeInfo {
+        std::string symbol;
+        std::string pair;
+        std::string contractType;
+        std::string status;
+        std::string baseAsset;
+        std::string quoteAsset;
+        std::vector<std::string> orderTypes;
+        std::vector<std::string> timeInForces;
+        double minPrice;
+        double maxPrice;
+        double tickSize;
+        double minQty;
+        double maxQty;
+        double stepSize;
     };
 }
 #endif

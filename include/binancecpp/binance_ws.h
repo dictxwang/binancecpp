@@ -98,7 +98,7 @@ namespace binance {
         }
     }
 
-    typedef bool (*WS_CB)(Json::Value &json_value );
+    typedef bool (*WS_CB)(std::string& messageJson);
 
     class BinanceWsClient {
     public:
@@ -115,6 +115,7 @@ namespace binance {
     protected:
         std::string apiKey;
         std::string secretKey;
+        unsigned char* signedSecretKey;
         std::string localIP;
         std::string remoteIP;
         triple<string, int, string> wsEndpoint;
@@ -127,6 +128,7 @@ namespace binance {
         ByteBuffer recvBuffer;
         ByteBuffer msgBuffer;
         WS_CB customCallback;
+        std::string sessionID;
 
     public:
         // Public methods
@@ -138,6 +140,7 @@ namespace binance {
         void init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal, bool useCombine, bool useTrading);
         // virtual std::string make_subscribe_frame(std::vector<std::string> &params);
         bool connect_endpoint(std::string& handshakePath);
+        bool send_session_logon();
         bool send_subscribe(std::string& payload);
 		bool start_event_loop(WS_CB customCallback);
         bool process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer);

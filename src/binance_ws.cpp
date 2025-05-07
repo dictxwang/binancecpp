@@ -24,6 +24,10 @@ namespace binance {
         }
         this->localIP = "";
         this->remoteIP = "";
+
+        if (secretKey != "") {
+            this->signedSecretKey = parse_private_key(apiKey, secretKey);
+        }
     }
 
     bool BinanceWsClient::connect_endpoint(std::string& handshakePath) {
@@ -50,6 +54,73 @@ namespace binance {
         }
 
         return true;
+    }
+
+    bool BinanceWsClient::send_session_logon() {
+        
+        // TODO If original sessionID is not empty, maybe need logout firstly
+
+        // Make payload
+        unsigned long timestamp = get_current_ms_epoch();
+        std::string logonID = generate_uuid();
+        std::string query = ("apiKey=");
+        query.append(this->apiKey);
+        query.append("&").append("timestamp=").append(std::to_string(timestamp));
+
+        Json::Value paramsJson;
+        paramsJson["apiKey"] = this->apiKey;
+        paramsJson["timestamp"] = Json::UInt64(timestamp);
+        try {
+            std::string signature = sign_payload_by_ed25519(this->signedSecretKey, query);
+            paramsJson["signature"] = signature;
+        } catch (std::exception &e) {
+            throw std::runtime_error("fail to signature: " + std::string(e.what()));
+        }
+
+        Json::Value reqJson;
+        reqJson["id"] = logonID;
+        reqJson["method"] = "session.logon";
+        reqJson["params"] = paramsJson;
+        std::string payload = serialize_json_value(reqJson);
+
+        WebSocketPacket packet;
+        packet.set_fin(1);
+        packet.set_opcode(WebSocketPacket::WSOpcode_Text);
+        ByteBuffer messageBuffer;
+        packet.set_payload(payload.c_str(), payload.length());
+        packet.pack_dataframe(messageBuffer);
+        int writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
+        if (writeLength <= 0) {
+            throw std::runtime_error("failed to send logon frame");
+        }
+
+        char buffer[1024];
+        int len = SSL_read(this->ssl, buffer, sizeof(buffer) - 1);
+        if (len < 0) {
+            throw std::runtime_error("failed to receive logon response");
+        } else {
+            // Parse logon result
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(std::string(buffer, len).c_str(), json_result);
+
+            int status = 0;
+            std::string respID;
+            if (json_result.isMember("status")) {
+                status = json_result["status"].asInt();
+            }
+            if (json_result.isMember("id")) {
+                respID = json_result["id"].asString();
+            }
+            if (status == 200 && respID == logonID) {
+                this->sessionID = logonID;
+                return true;
+            } else {
+                this->sessionID = "";
+                return false;
+            }
+        }
     }
 
     bool BinanceWsClient::send_subscribe(std::string& payload) {
@@ -184,13 +255,15 @@ namespace binance {
         }
         if (packet.get_opcode() == WebSocketPacket::WSOpcode_Text) {
             // Parse to json result
-            Json::Value json_result;
-            Json::Reader reader;
-            json_result.clear();
-            reader.parse(std::string(mssageBuffer.bytes(), mssageBuffer.length()).c_str() , json_result);
+            // Json::Value json_result;
+            // Json::Reader reader;
+            // json_result.clear();
+            // reader.parse(std::string(mssageBuffer.bytes(), mssageBuffer.length()).c_str() , json_result);
 
+            // Cumstomer could choose Json library
+            std::string messageJson = std::string(mssageBuffer.bytes(), mssageBuffer.length()).c_str() ;
             // Process json result by custom
-            return this->customCallback(json_result);
+            return this->customCallback(messageJson);
         }
 
         return true;

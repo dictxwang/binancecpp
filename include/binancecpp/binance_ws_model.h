@@ -10,6 +10,18 @@ using namespace std;
 
 namespace binance {
 
+    struct WsLogonOnParam {
+        string apiKey;
+        string signature;
+        unsigned long timestamp;
+    };
+
+    struct WsLogonOnReq {
+        string id;
+        string method;
+        WsLogonOnParam params;
+    };
+
     struct WsBookTickerEvent {
         unsigned long updateId;
         string symbol;

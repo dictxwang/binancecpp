@@ -4,6 +4,7 @@
 #include <string>
 #include <curl/curl.h>
 #include "binance_model.h"
+#include "binance_ws_model.h"
 #include "binance_enum.h"
 #include "json/json.h"
 #include "util/common_tool.h"

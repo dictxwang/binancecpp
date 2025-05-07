@@ -4,12 +4,21 @@
 #include <sys/time.h>
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
+#include <sodium.h>
+#include <random>
+#include <iomanip>
 #include "binancecpp/json/json.h"
 
 namespace binance {
 
     static double str_to_dobule(Json::Value& value) {
         return std::stod(value.asString());
+    }
+
+    static std::string serialize_json_value(Json::Value& value) {
+        Json::StreamWriterBuilder writer;
+        std::string jsonString = Json::writeString(writer, value);
+        return jsonString;
     }
 
     //---------------------------------
@@ -63,5 +72,73 @@ namespace binance {
         return b2a_hex( (char *)digest, 32 );
         
     }
+    
+    static std::string base64_encode(const unsigned char* data, size_t len) {
+        static const char* base64_chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz"
+            "0123456789+/";
+        std::string encoded;
+        int val = 0, valb = -6;
+        for (size_t i = 0; i < len; ++i) {
+            val = (val << 8) + data[i];
+            valb += 8;
+            while (valb >= 0) {
+                encoded.push_back(base64_chars[(val >> valb) & 0x3F]);
+                valb -= 6;
+            }
+        }
+        if (valb > -6) encoded.push_back(base64_chars[((val << 8) >> (valb + 8)) & 0x3F]);
+        while (encoded.size() % 4) encoded.push_back('=');
+        return encoded;
+    }
+
+    static unsigned char* parse_private_key(std::string public_key, std::string private_key) {
+
+        unsigned char pkey[crypto_sign_PUBLICKEYBYTES];
+        unsigned char skey[crypto_sign_SECRETKEYBYTES];
+        memcpy(pkey, public_key.c_str(), crypto_sign_PUBLICKEYBYTES);
+        memcpy(skey, private_key.c_str(), crypto_sign_SECRETKEYBYTES);
+        crypto_sign_keypair(pkey, skey);
+        return skey;
+    }
+
+    static std::string sign_payload_by_ed25519(unsigned char* skey, std::string &payload) {
+        
+        unsigned char signature[crypto_sign_BYTES];
+        crypto_sign_detached(signature,
+                            nullptr, // Signature length (optional, not needed here)
+                            (const unsigned char*)payload.c_str(),
+                            payload.size(),
+                            skey);
+
+        // Encode the signature in Base64
+        std::string base64_signature = base64_encode(signature, crypto_sign_BYTES);
+        return base64_signature;
+    }
+
+    static std::string generate_uuid() {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, 15);
+        std::uniform_int_distribution<> dis3(8, 11); // For variant bits
+    
+        std::stringstream ss;
+        ss << std::hex << std::setfill('0');
+    
+        for (int i = 0; i < 8; ++i) ss << dis(gen);
+        ss << "-";
+        for (int i = 0; i < 4; ++i) ss << dis(gen);
+        ss << "-4"; // UUID version 4
+        for (int i = 0; i < 3; ++i) ss << dis(gen);
+        ss << "-";
+        ss << dis3(gen); // Variant bits
+        for (int i = 0; i < 3; ++i) ss << dis(gen);
+        ss << "-";
+        for (int i = 0; i < 12; ++i) ss << dis(gen);
+    
+        return ss.str();
+    }
+    
 }
 #endif

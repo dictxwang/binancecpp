@@ -45,7 +45,7 @@ namespace binance {
         BinanceWsClient::init(apiKey, secretKey, MarketType::SPOT, useInternal, false, false);
     }
 
-    bool BinanceSpotWsClient::startUserDataStream(WS_CB customCallback , std::string listenKey) {
+    bool BinanceSpotWsClient::startUserDataStreamV1(WS_CB customCallback , std::string listenKey) {
 
         if (listenKey.size() == 0) {
             return false;
@@ -57,21 +57,35 @@ namespace binance {
             return result;
         }
 
-        // int index = 0;
-        // std::string subscribe_msg = "{\"method\":\"SUBSCRIBE\",\"params\":[";
-        // for (std::string symbol : symbols) {
-        //     if (index > 0) {
-        //         subscribe_msg += ",";
-        //     }
-		// 	subscribe_msg += "\"" + strHelper::toLower(symbol) + "@bookTicker\"";
-        //     index++;
-        // }
-        // subscribe_msg += "]}";
+        // Not require logon and subscribe
 
-        // result = this->send_subscribe(subscribe_msg);
-        // if (!result) {
-        //     return result;
-        // }
+        return this->start_event_loop(customCallback);
+    }
+
+    bool BinanceSpotWsClient::startUserDataStream(WS_CB customCallback) {
+
+        std::string endpoint = this->wsEndpoint.third;
+        bool result = this->connect_endpoint(endpoint);
+        if (!result) {
+            return result;
+        }
+
+        // session logon
+        result = this->send_session_logon();
+        if (!result) {
+            return result;
+        }
+
+        // subscribe
+        Json::Value reqJson;
+        reqJson["id"] = this->sessionID;
+        reqJson["method"] = "userDataStream.subscribe";
+        std::string subscribeMessage = serialize_json_value(reqJson);
+
+        result = this->send_subscribe(subscribeMessage);
+        if (!result) {
+            return result;
+        }
 
         return this->start_event_loop(customCallback);
     }

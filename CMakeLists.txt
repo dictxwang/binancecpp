@@ -16,7 +16,6 @@ set(CMAKE_BUILD_TYPE "Release")
 include(CMakeFindDependencyMacro)
 find_dependency(CURL REQUIRED)
 find_dependency(OpenSSL REQUIRED)
-# find_dependency(Sodium REQUIRED)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CUSTOM_LIB_DIR "/usr/lib/x86_64-linux-gnu")
@@ -30,10 +29,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else()
     message(WARNING "Unknown platform: ${CMAKE_SYSTEM_NAME}")
 endif()
-
-# if("${LIBSODIUM_FILE_PATH}" STREQUAL "")
-#     set(LIBSODIUM_FILE_PATH "${CUSTOM_LIB_DIR}/libsodium.a")
-# endif()
 
 link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -56,7 +51,6 @@ target_include_directories(binancecpp PUBLIC
 target_link_libraries(binancecpp
     PUBLIC CURL::libcurl
     PUBLIC OpenSSL::SSL OpenSSL::Crypto
-    PUBLIC Sodium
 )
 
 # Set library properties
@@ -66,7 +60,6 @@ set_target_properties(binancecpp PROPERTIES
     INTERFACE_LINK_LIBRARIES "CURL::libcurl"
     INTERFACE_LINK_LIBRARIES "OpenSSL::SSL"
     INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto"
-    INTERFACE_LINK_LIBRARIES "Sodium"
 )
 
 # Install your library
@@ -104,6 +97,3 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/binancecppConfigVersion.cmake"
     DESTINATION lib/cmake/binancecpp
 )
-
-# get_property(libraries TARGET binancecpp PROPERTY INTERFACE_LINK_LIBRARIES)
-# message(STATUS ">>>>> INTERFACE_LINK_LIBRARIES for LibraryA: ${libraries}")

@@ -42,6 +42,11 @@ namespace binance {
 
     void BinanceSpotWsClient::initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal) {
 
+        BinanceWsClient::init(apiKey, secretKey, MarketType::SPOT, useInternal, false, true);
+    }
+
+    void BinanceSpotWsClient::initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal) {
+
         BinanceWsClient::init(apiKey, secretKey, MarketType::SPOT, useInternal, false, false);
     }
 

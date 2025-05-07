@@ -4,7 +4,9 @@
 #include <sys/time.h>
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
-#include <sodium.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 #include <random>
 #include <iomanip>
 #include "binancecpp/json/json.h"
@@ -93,6 +95,7 @@ namespace binance {
         return encoded;
     }
 
+    /*
     static unsigned char* parse_private_key(std::string public_key, std::string private_key) {
 
         unsigned char pkey[crypto_sign_PUBLICKEYBYTES];
@@ -116,6 +119,7 @@ namespace binance {
         std::string base64_signature = base64_encode(signature, crypto_sign_BYTES);
         return base64_signature;
     }
+    */
 
     static std::string generate_uuid() {
         std::random_device rd;
@@ -140,5 +144,46 @@ namespace binance {
         return ss.str();
     }
     
+    static EVP_PKEY* parse_private_key(std::string private_key) {
+        // Create a BIO memory buffer from the PEM string
+        BIO* bio = BIO_new_mem_buf(private_key.c_str(), -1);
+        if (!bio) {
+            return nullptr;
+        }
+
+        // Read the private key from the BIO
+        EVP_PKEY* parsed_private_key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+        BIO_free(bio);
+        return parsed_private_key;
+    }
+
+    static std::string sign_payload_by_ed25519(EVP_PKEY* parsed_private_key, std::string &payload) {
+        // Create a context for signing
+        EVP_MD_CTX* md_ctx = EVP_MD_CTX_new();
+        if (!md_ctx) {
+            throw std::runtime_error("failed to new ctx");
+        }
+
+        // Initialize the signing operation
+        if (EVP_DigestSignInit(md_ctx, NULL, NULL, NULL, parsed_private_key) <= 0) {
+            throw std::runtime_error("failed to sign init");
+        }
+
+        // Sign the message
+        size_t signature_len = 0;
+        if (EVP_DigestSign(md_ctx, NULL, &signature_len, (const unsigned char*)payload.data(), payload.size()) <= 0) {
+            throw std::runtime_error("failed to digest init");
+        }
+        std::vector<unsigned char> signature(signature_len);
+        if (EVP_DigestSign(md_ctx, signature.data(), &signature_len, (const unsigned char*)payload.data(), payload.size()) <= 0) {
+            throw std::runtime_error("failed to signature");
+        }
+
+        // Resize the signature to the actual size
+        signature.resize(signature_len);
+
+        std::string base64_signature = base64_encode(signature.data(), signature.size());
+        return base64_signature;
+    }
 }
 #endif

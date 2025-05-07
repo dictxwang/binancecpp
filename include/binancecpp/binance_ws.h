@@ -15,7 +15,7 @@ namespace binance {
 
     const triple<string, int, string> SPOT_WS_ENDPOINT = triple(string("stream.binance.com"), 9443, string("/ws"));
     const triple<string, int, string> SPOT_COMBINE_WS_ENDPOINT = triple(string("stream.binance.com"), 9443, string("/stream?streams="));
-    const triple<string, int, string> SPOT_TRADING_WS_ENDPOINT = triple(string("ws-api.binance.com"), 443, string("/v3?returnRateLimits=false"));
+    const triple<string, int, string> SPOT_TRADING_WS_ENDPOINT = triple(string("ws-api.binance.com"), 443, string("/ws-api/v3?returnRateLimits=false"));
 
     
     const triple<string, int, string> DELIVERY_WS_ENDPOINT = triple(string("dstream.binance.com"), 9443, string("/ws"));
@@ -115,7 +115,7 @@ namespace binance {
     protected:
         std::string apiKey;
         std::string secretKey;
-        unsigned char* signedSecretKey;
+        EVP_PKEY* parsedSecretKey;
         std::string localIP;
         std::string remoteIP;
         triple<string, int, string> wsEndpoint;

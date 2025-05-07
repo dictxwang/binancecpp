@@ -26,7 +26,7 @@ namespace binance {
         this->remoteIP = "";
 
         if (secretKey != "") {
-            this->signedSecretKey = parse_private_key(apiKey, secretKey);
+            this->parsedSecretKey = parse_private_key(secretKey);
         }
     }
 
@@ -71,7 +71,7 @@ namespace binance {
         paramsJson["apiKey"] = this->apiKey;
         paramsJson["timestamp"] = Json::UInt64(timestamp);
         try {
-            std::string signature = sign_payload_by_ed25519(this->signedSecretKey, query);
+            std::string signature = sign_payload_by_ed25519(this->parsedSecretKey, query);
             paramsJson["signature"] = signature;
         } catch (std::exception &e) {
             throw std::runtime_error("fail to signature: " + std::string(e.what()));
@@ -83,9 +83,12 @@ namespace binance {
         reqJson["params"] = paramsJson;
         std::string payload = serialize_json_value(reqJson);
 
+        // std::cout << "logon payload: " << payload << std::endl;
+
         WebSocketPacket packet;
         packet.set_fin(1);
         packet.set_opcode(WebSocketPacket::WSOpcode_Text);
+        packet.set_mask(1);
         ByteBuffer messageBuffer;
         packet.set_payload(payload.c_str(), payload.length());
         packet.pack_dataframe(messageBuffer);
@@ -99,6 +102,9 @@ namespace binance {
         if (len < 0) {
             throw std::runtime_error("failed to receive logon response");
         } else {
+            // Remove start opcode
+            std::memmove(buffer, buffer + 4, len - 4 + 1);
+            // std::cout << "logon resp: " << len << std::string(buffer, len-4) << std::endl;
             // Parse logon result
             Json::Value json_result;
             Json::Reader reader;
@@ -113,6 +119,7 @@ namespace binance {
             if (json_result.isMember("id")) {
                 respID = json_result["id"].asString();
             }
+
             if (status == 200 && respID == logonID) {
                 this->sessionID = logonID;
                 return true;
@@ -132,6 +139,7 @@ namespace binance {
         WebSocketPacket packet;
         packet.set_fin(1);
         packet.set_opcode(WebSocketPacket::WSOpcode_Text);
+        packet.set_mask(1);
         ByteBuffer messageBuffer;
         packet.set_payload(payload.c_str(), payload.length());
         packet.pack_dataframe(messageBuffer);
@@ -244,6 +252,7 @@ namespace binance {
             }
             packet.set_fin(1);
             packet.set_opcode(WebSocketPacket::WSOpcode_Pong);
+            packet.set_mask(1);
             ByteBuffer pong_buf;
             packet.pack_dataframe(pong_buf);
             int writeLength = SSL_write(ssl, pong_buf.bytes(), pong_buf.length());
@@ -282,5 +291,6 @@ namespace binance {
                 close(this->socketFd);
             } catch (std::exception &e) {}
         }
+        delete(this->parsedSecretKey);
     }
 }

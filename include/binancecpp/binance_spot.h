@@ -22,6 +22,13 @@ namespace binance {
         void get_account(CommonRestResponse<binance::SpotAccount> &response);
         void start_userDataStream(CommonRestResponse<std::string> &response);
         void keep_userDataStream(const std::string listenKey, CommonRestResponse<std::string> &response);
+
+    protected:
+        static unsigned long timeOffset;
+        unsigned long calculate_timestamp();
+    
+    public:
+        static void setServerTimeOffset(binance::CommonRestResponse<unsigned long> response);
     };
 }
 #endif

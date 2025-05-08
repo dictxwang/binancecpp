@@ -20,6 +20,15 @@ namespace binance {
     const std::pair<std::string, std::string> DELIVERY_API_URL = {"https://dapi.binance.com", "dapi.binance.com"};
     const std::pair<std::string, std::string> PORTFOLIO_API_URL = {"https://papi.binance.com", "papi.binance.com"};
 
+    struct RestServerMeta {
+        std::string baseUrl;
+        bool useInternal;
+        std::string serverHost;
+        std::string serverPort;
+        std::string localIP;
+        std::string remoteIP;
+    };
+
     static std::pair<std::string, std::string> getBaseUrl(MarketType marketType, bool useInternal) {
         switch (marketType) {
             case SPOT:
@@ -65,7 +74,9 @@ namespace binance {
     class BinanceRestClient {
         public:
             // Constructor
-            BinanceRestClient() {}
+            BinanceRestClient() {
+                this->serverMeta = binance::RestServerMeta{};
+            }
     
             // Destructor
             virtual ~BinanceRestClient() {
@@ -79,20 +90,21 @@ namespace binance {
         protected:
             // Protected methods
             void init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal = false);
-    
-            CURLcode curl_api(CURL* curl, std::string &url, std::string &result_json );
-		    CURLcode curl_api_with_header(CURL* curl, std::string &url, std::string &result_json , std::vector <std::string> &extra_http_header, std::string &post_data, std::string &action );
+
+            static CURLcode curl_api(CURL* curl, std::string &url, binance::RestServerMeta &serverMeta, std::string &result_json );
+		    static CURLcode curl_api_with_header(CURL* curl, std::string &url, binance::RestServerMeta &serverMeta, std::string &result_json , std::vector <std::string> &extra_http_header, std::string &post_data, std::string &action );
 		
         protected:
-    
+        
             std::string apiKey;
             std::string secretKey;
-            std::string localIP;
-            std::string remoteIP;
-            bool useInternal;
-            std::string baseUrl;
-            std::string serverHost;
-            std::string serverPort;
+            binance::RestServerMeta serverMeta;
+            // std::string localIP;
+            // std::string remoteIP;
+            // bool useInternal;
+            // std::string baseUrl;
+            // std::string serverHost;
+            // std::string serverPort;
             MarketType marketType;
     };
 }

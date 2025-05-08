@@ -7,8 +7,67 @@ namespace binance {
         BinanceRestClient::init(apiKey, secretKey, MarketType::SPOT, useInternal);
     }
 
+    unsigned long BinanceSpotRestClient::calculate_timestamp() {
+        return get_current_ms_epoch() - BinanceSpotRestClient::timeOffset;
+    }
+
+    void BinanceSpotRestClient::setServerTimeOffset(binance::CommonRestResponse<unsigned long> response) {
+
+        std::string url = binance::SPOT_API_URL.second + "/api/v3/time";
+
+        CURL* curl = curl_easy_init();
+        CURLcode res;
+        std::string str_result;
+
+        try {
+            // Set default server-meta
+            binance::RestServerMeta serverMeta = binance::RestServerMeta{};
+            res = BinanceRestClient::curl_api(curl, url, serverMeta, str_result);
+        } catch (std::exception &e) {
+            response.code = -500;
+            response.msg = "parse json error: " + std::string(e.what());
+            if (curl != nullptr) {
+                curl_easy_cleanup(curl);
+            }
+            return;
+        }
+
+        if (str_result.size() > 0 ) {
+            try {
+                Json::Value json_result;
+                Json::Reader reader;
+                json_result.clear();
+                reader.parse(str_result , json_result);
+
+                if (parse_api_has_error(json_result, response)) {
+                    if (curl != nullptr) {
+                        curl_easy_cleanup(curl);
+                    }
+                    return;
+                }
+
+                if (json_result.isMember("serverTime")) {
+                    unsigned long serverTime = json_result["serverTime"].asUInt64();
+                    response.data = serverTime;
+                    BinanceSpotRestClient::timeOffset = get_current_ms_epoch()-serverTime;
+                }
+            } catch (std::exception &e ) {
+                response.code = -900;
+                response.msg = "parse json error: " + std::string(e.what());
+            }
+        } else {
+            // notthing to parse
+            response.code = -100;
+            response.msg = "no response content";
+        }
+
+        if (curl != nullptr) {
+            curl_easy_cleanup(curl);
+        }
+    }
+
     void BinanceSpotRestClient::get_exchangeInfo(std::vector<std::string>& instIds, CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response) {
-        std::string url = baseUrl + "/api/v3/exchangeInfo";
+        std::string url = this->serverMeta.baseUrl + "/api/v3/exchangeInfo";
         if (instIds.size() > 0) {
             url.append("?");
             if (instIds.size() == 1) {
@@ -28,7 +87,7 @@ namespace binance {
         std::string str_result;
 
         try {
-            res = curl_api(curl, url, str_result);
+            res = curl_api(curl, url, this->serverMeta, str_result);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());
@@ -101,7 +160,7 @@ namespace binance {
     }
 
     void BinanceSpotRestClient::get_account(CommonRestResponse<binance::SpotAccount> &response) {
-        std::string url = this->baseUrl + "/api/v3/account?";
+        std::string url = this->serverMeta.baseUrl + "/api/v3/account?";
 
         std::string querystring("timestamp=");
         querystring.append(std::to_string( get_current_ms_epoch()));
@@ -125,7 +184,7 @@ namespace binance {
 
         try {
             // std::cout << "request signature= " << signature << std::endl;
-            res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
+            res = curl_api_with_header(curl, url, this->serverMeta, str_result , extra_http_header, post_data, action);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());
@@ -206,7 +265,7 @@ namespace binance {
     }
 
     void BinanceSpotRestClient::start_userDataStream(CommonRestResponse<std::string> &response) {
-        std::string url = this->baseUrl + "/api/v3/userDataStream";
+        std::string url = this->serverMeta.baseUrl + "/api/v3/userDataStream";
         
         std::vector<std::string> extra_http_header;
         std::string header_chunk("X-MBX-APIKEY: ");
@@ -221,7 +280,7 @@ namespace binance {
         std::string str_result;
 
         try {
-            res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
+            res = curl_api_with_header(curl, url, this->serverMeta, str_result, extra_http_header, post_data, action);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());
@@ -260,7 +319,7 @@ namespace binance {
     }
 
     void BinanceSpotRestClient::keep_userDataStream(const std::string listenKey, CommonRestResponse<std::string> &response) {
-        std::string url = this->baseUrl + "/api/v3/userDataStream";
+        std::string url = this->serverMeta.baseUrl + "/api/v3/userDataStream";
         
         std::vector<std::string> extra_http_header;
         std::string header_chunk("X-MBX-APIKEY: ");
@@ -275,7 +334,7 @@ namespace binance {
         std::string str_result;
 
         try {
-            res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
+            res = curl_api_with_header(curl, url, this->serverMeta, str_result , extra_http_header, post_data, action);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());

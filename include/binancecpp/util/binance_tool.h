@@ -33,7 +33,7 @@ namespace binance {
     }
 
     //---------------------------------
-    static unsigned long get_current_ms_epoch( ) {
+    static uint64_t get_current_ms_epoch( ) {
 
         struct timeval tv;
         gettimeofday(&tv, NULL); 

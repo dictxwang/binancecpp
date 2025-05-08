@@ -51,11 +51,11 @@ namespace binance {
         bool brokered;
         bool requireSelfTradePrevention;
         bool preventSor;
-        unsigned long updateTime;
+        uint64_t updateTime;
         std::string accountType;
         std::vector<BalanceLite> balances;
         std::vector<std::string> permissions;
-        unsigned long uid;
+        uint64_t uid;
     };
 
     struct FuturesExchangeInfo {

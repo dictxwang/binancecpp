@@ -7,13 +7,14 @@ namespace binance {
         BinanceRestClient::init(apiKey, secretKey, MarketType::SPOT, useInternal);
     }
 
-    unsigned long BinanceSpotRestClient::calculate_timestamp() {
-        return get_current_ms_epoch() - BinanceSpotRestClient::timeOffset;
+    uint64_t BinanceSpotRestClient::get_property_timestamp() {
+        
+        return get_current_ms_epoch() - this->timeOffset;
     }
 
-    void BinanceSpotRestClient::setServerTimeOffset(binance::CommonRestResponse<unsigned long> response) {
+    void BinanceSpotRestClient::setServerTimeOffset(binance::CommonRestResponse<uint64_t> &response) {
 
-        std::string url = binance::SPOT_API_URL.second + "/api/v3/time";
+        std::string url = this->serverMeta.baseUrl + "/api/v3/time";
 
         CURL* curl = curl_easy_init();
         CURLcode res;
@@ -22,7 +23,7 @@ namespace binance {
         try {
             // Set default server-meta
             binance::RestServerMeta serverMeta = binance::RestServerMeta{};
-            res = BinanceRestClient::curl_api(curl, url, serverMeta, str_result);
+            res = curl_api(curl, url, str_result);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());
@@ -47,9 +48,10 @@ namespace binance {
                 }
 
                 if (json_result.isMember("serverTime")) {
-                    unsigned long serverTime = json_result["serverTime"].asUInt64();
+                    uint64_t serverTime = json_result["serverTime"].asUInt64();
                     response.data = serverTime;
-                    BinanceSpotRestClient::timeOffset = get_current_ms_epoch()-serverTime;
+                    uint64_t now = get_current_ms_epoch();
+                    this->timeOffset = static_cast<long long>(now)-static_cast<long long>(serverTime);
                 }
             } catch (std::exception &e ) {
                 response.code = -900;
@@ -87,7 +89,7 @@ namespace binance {
         std::string str_result;
 
         try {
-            res = curl_api(curl, url, this->serverMeta, str_result);
+            res = curl_api(curl, url, str_result);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());
@@ -184,7 +186,7 @@ namespace binance {
 
         try {
             // std::cout << "request signature= " << signature << std::endl;
-            res = curl_api_with_header(curl, url, this->serverMeta, str_result , extra_http_header, post_data, action);
+            res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());
@@ -280,7 +282,7 @@ namespace binance {
         std::string str_result;
 
         try {
-            res = curl_api_with_header(curl, url, this->serverMeta, str_result, extra_http_header, post_data, action);
+            res = curl_api_with_header(curl, url, str_result, extra_http_header, post_data, action);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());
@@ -334,7 +336,7 @@ namespace binance {
         std::string str_result;
 
         try {
-            res = curl_api_with_header(curl, url, this->serverMeta, str_result , extra_http_header, post_data, action);
+            res = curl_api_with_header(curl, url, str_result , extra_http_header, post_data, action);
         } catch (std::exception &e) {
             response.code = -500;
             response.msg = "parse json error: " + std::string(e.what());

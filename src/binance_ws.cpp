@@ -61,7 +61,7 @@ namespace binance {
         // TODO If original sessionID is not empty, maybe need logout firstly
 
         // Make payload
-        unsigned long timestamp = get_current_ms_epoch();
+        uint64_t timestamp = get_current_ms_epoch();
         std::string logonID = generate_uuid();
         std::string query = ("apiKey=");
         query.append(this->apiKey);

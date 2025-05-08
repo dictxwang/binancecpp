@@ -20,14 +20,14 @@ namespace binance {
         this->serverMeta.serverPort = "443";
     }
 
-    CURLcode BinanceRestClient::curl_api(CURL* curl, std::string &url, binance::RestServerMeta &serverMeta, std::string &result_json ) {
+    CURLcode BinanceRestClient::curl_api(CURL* curl, std::string &url, std::string &result_json ) {
         std::vector <std::string> v;
         std::string action = "GET";
         std::string post_data = "";
-        return curl_api_with_header(curl, url, serverMeta, result_json , v, post_data , action );	
+        return curl_api_with_header(curl, url , result_json , v, post_data , action );	
     } 
 
-    CURLcode BinanceRestClient::curl_api_with_header(CURL *curl, std::string &url, binance::RestServerMeta &serverMeta, std::string &str_result, std::vector <std::string> &extra_http_header , std::string &post_data , std::string &action ) {
+    CURLcode BinanceRestClient::curl_api_with_header(CURL *curl, std::string &url, std::string &str_result, std::vector <std::string> &extra_http_header , std::string &post_data , std::string &action ) {
 
         CURLcode res = CURLE_OK;
 
@@ -40,14 +40,14 @@ namespace binance {
             // curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip");
 
             // Bind the request to a specific local IP or network interface
-            if (!serverMeta.localIP.empty()) {
+            if (!this->serverMeta.localIP.empty()) {
                 curl_easy_setopt(curl, CURLOPT_INTERFACE, serverMeta.localIP.c_str());
             }
 
-            if (!serverMeta.remoteIP.empty()) {
+            if (!this->serverMeta.remoteIP.empty()) {
                 struct curl_slist* resolve_list = nullptr;
                 // curl_easy_setopt(curl, CURLOPT_CONNECT_TO, (host + ":" + port + "::" + remoteIP).c_str());
-                std::string resolve_entry = serverMeta.serverHost + ":" + serverMeta.serverPort + ":" + serverMeta.remoteIP;
+                std::string resolve_entry = this->serverMeta.serverHost + ":" + this->serverMeta.serverPort + ":" + serverMeta.remoteIP;
                 resolve_list = curl_slist_append(resolve_list, resolve_entry.c_str());
                 curl_easy_setopt(curl, CURLOPT_RESOLVE, resolve_list);
             }

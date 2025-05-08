@@ -13,7 +13,7 @@ namespace binance {
     struct WsLogonOnParam {
         string apiKey;
         string signature;
-        unsigned long timestamp;
+        uint64_t timestamp;
     };
 
     struct WsLogonOnReq {
@@ -23,7 +23,7 @@ namespace binance {
     };
 
     struct WsBookTickerEvent {
-        unsigned long updateId;
+        uint64_t updateId;
         string symbol;
         double bestBidPrice;
         double bestBidQty;
@@ -34,7 +34,7 @@ namespace binance {
     struct WsSpotBalanceUpdateEvent {
         string asset; //"a"
         double change; //""d
-        unsigned long transactionTime; // "T"
+        uint64_t transactionTime; // "T"
     };
 
     struct WsAccountUpdateBalanceEvent {
@@ -44,7 +44,7 @@ namespace binance {
     };
 
     struct WsSpotAccountUpdateEvent {
-        unsigned long updateTime; // "u"
+        uint64_t updateTime; // "u"
         vector<WsAccountUpdateBalanceEvent> balances; // "B"
     };
 
@@ -63,19 +63,19 @@ namespace binance {
         string executionType; // "x" execution type for this event NEW/TRADE...
         string status; // "X"` order status
         string rejectReason; // "r" 
-        unsigned long id; // "i" order id
+        uint64_t id; // "i" order id
         double latestVolume; // "l" quantity for the latest trade
         double filledVolume; // "z"
         double latestPrice; // "L" price for the latest trade
         string feeAsset; // "N"
         double feeCost; // "n"
-        unsigned long transactionTime; // "T"
+        uint64_t transactionTime; // "T"
         long tradeId; // "t"
-        // unsigned long ignoreI; // "I"
+        // uint64_t ignoreI; // "I"
         bool isInOrderBook; // "w" is the order in the order book?
         bool isMaker; // "m" is this order maker?
         // bool ignoreM; // "M"` ignore
-        unsigned long createTime; // "O"
+        uint64_t createTime; // "O"
         double filledQuoteVolume; // "Z" the quote volume that already filled
         double latestQuoteVolume; // "Y" the quote volume for the latest trade
         double quoteVolume; // "Q"`

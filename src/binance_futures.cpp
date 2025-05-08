@@ -8,7 +8,7 @@ namespace binance {
     }
 
     void BinanceFuturesRestClient::get_exchangeInfo(CommonRestResponse<std::vector<binance::FuturesExchangeInfo>> &response) {
-        std::string url = this->baseUrl + "/fapi/v1/exchangeInfo";
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/exchangeInfo";
 
         // TODO Initialize libcurl
         // curl_global_init(CURL_GLOBAL_DEFAULT);

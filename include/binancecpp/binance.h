@@ -91,21 +91,18 @@ namespace binance {
             // Protected methods
             void init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal = false);
 
-            static CURLcode curl_api(CURL* curl, std::string &url, binance::RestServerMeta &serverMeta, std::string &result_json );
-		    static CURLcode curl_api_with_header(CURL* curl, std::string &url, binance::RestServerMeta &serverMeta, std::string &result_json , std::vector <std::string> &extra_http_header, std::string &post_data, std::string &action );
+            CURLcode curl_api(CURL* curl, std::string &url, std::string &result_json );
+		    CURLcode curl_api_with_header(CURL* curl, std::string &url, std::string &result_json , std::vector <std::string> &extra_http_header, std::string &post_data, std::string &action );
 		
         protected:
         
             std::string apiKey;
             std::string secretKey;
             binance::RestServerMeta serverMeta;
-            // std::string localIP;
-            // std::string remoteIP;
-            // bool useInternal;
-            // std::string baseUrl;
-            // std::string serverHost;
-            // std::string serverPort;
             MarketType marketType;
+
+        public:
+            long timeOffset = 0;
     };
 }
 #endif

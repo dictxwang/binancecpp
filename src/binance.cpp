@@ -79,4 +79,124 @@ namespace binance {
 
         return res;
     }
+
+    void BinanceRestClient::api_action(std::string &api_url, binance::ApiSecretType sec_type, std::string &method, std::vector <std::string> &header, std::vector <std::string> &query_params, std::vector <std::string> &form_params, binance::CommonRestResponse<std::string> &action_response) {
+        std::string queryString;
+        std::string formString;
+        if (sec_type == binance::ApiSecretType::SecTypeSignature) {
+            // child instance give timestamp
+            // query_params.push_back("timestamp=");
+        }
+
+        CURL* curl = curl_easy_init();
+        CURLcode call_code;
+        std::string call_result;
+
+        char* delim = "=";
+
+        if (!query_params.empty()) {
+            std::sort(query_params.begin(), query_params.end());
+            std::vector<std::string> sorted_params;
+            for (int i = 0; i < query_params.size(); ++i) {
+                std::vector<std::string> pair;
+                strHelper::splitStr(pair, query_params[i], delim);
+                if (pair.size() == 2) {
+                    char* escape_value = curl_easy_escape(curl, pair[1].c_str(), 0);
+                    sorted_params.push_back(pair[0] + "=" + std::string(escape_value));
+                    curl_free(escape_value);
+                }
+            }
+            queryString = strHelper::joinStrings(sorted_params, "&");
+        }
+
+        if (!form_params.empty()) {
+            std::sort(form_params.begin(), form_params.end());
+            std::vector<std::string> sorted_params;
+            for (int i = 0; i < query_params.size(); ++i) {
+                std::vector<std::string> pair;
+                strHelper::splitStr(pair, query_params[i], delim);
+                if (pair.size() == 2) {
+                    char* escape_value = curl_easy_escape(curl, pair[1].c_str(), 0);
+                    sorted_params.push_back(pair[0] + "=" + std::string(escape_value));
+                    curl_free(escape_value);
+                }
+            }
+            formString = strHelper::joinStrings(sorted_params, "&");
+        }
+
+        if (formString.size() != 0) {
+            header.push_back("Content-Type: application/x-www-form-urlencoded");
+        }
+
+        if (sec_type == binance::SecTypeApiKey || sec_type == binance::SecTypeSignature) {
+            header.push_back("X-MBX-APIKEY: " + this->apiKey);
+        }
+
+        if (sec_type == binance::SecTypeSignature) {
+            std::string payload = queryString + formString;
+            std::string signature = hmac_sha256(this->secretKey.c_str() , payload.c_str());
+            if (queryString.size() == 0) {
+                queryString.append("signature=").append(signature);
+            } else {
+                queryString.append("&signature=").append(signature);
+            }
+        }
+
+        std::string fullUrl = api_url;
+        if (queryString.size() > 0) {
+            fullUrl.append("?").append(queryString);
+        }
+
+        try {
+            // Set default server-meta
+            binance::RestServerMeta serverMeta = binance::RestServerMeta{};
+            call_code = curl_api_with_header(curl, fullUrl, call_result, header, formString, method);
+        } catch (std::exception &e) {
+            action_response.code = -500;
+            action_response.msg = "parse json error: " + std::string(e.what());
+            if (curl != nullptr) {
+                curl_easy_cleanup(curl);
+            }
+            return;
+        }
+
+        if (call_result.size() > 0 ) {
+            // std::cout << "api response: " << call_result << std::endl;
+            if (call_result.find("\"code\"") && call_result.find("\"msg\"")) {
+                try {
+                    Json::Value json_result;
+                    Json::Reader reader;
+                    json_result.clear();
+                    reader.parse(call_result , json_result);
+    
+                    if (parse_api_has_error(json_result, action_response)) {
+                        if (curl != nullptr) {
+                            curl_easy_cleanup(curl);
+                        }
+                        return;
+                    }
+
+                } catch (std::exception &e) {
+                    action_response.code = -900;
+                    action_response.msg = "parse json error: " + std::string(e.what());
+                }
+            }
+            // 透传给调用方解析
+            action_response.data = call_result;
+        } else {
+            // notthing to parse
+            action_response.code = -100;
+            action_response.msg = "no response content";
+        }
+
+        if (curl != nullptr) {
+            curl_easy_cleanup(curl);
+        }
+    }
+
+    void BinanceRestClient::api_action_get_no_sec(std::string &api_url, std::vector <std::string> &query_params, binance::CommonRestResponse<std::string> &action_response) {
+        std::vector <std::string> empty;
+        std::string method = "GET";
+        api_action(api_url, ApiSecretType::SecTypeNone, method, empty, query_params, empty, action_response);
+    }
 }

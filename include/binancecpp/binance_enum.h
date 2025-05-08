@@ -3,6 +3,12 @@
 
 namespace binance {
 
+    enum ApiSecretType {
+        SecTypeNone,
+        SecTypeApiKey,
+        SecTypeSignature,
+    };
+
     enum MarketType {
         SPOT,
         FUTURES,

@@ -15,157 +15,182 @@ namespace binance {
     void BinanceSpotRestClient::setServerTimeOffset(binance::CommonRestResponse<uint64_t> &response) {
 
         std::string url = this->serverMeta.baseUrl + "/api/v3/time";
+        std::vector<std::string> query_params;
+        binance::CommonRestResponse<std::string> action_response;
 
-        CURL* curl = curl_easy_init();
-        CURLcode res;
-        std::string str_result;
+        api_action_get_no_sec(url, query_params, action_response);
 
-        try {
-            // Set default server-meta
-            binance::RestServerMeta serverMeta = binance::RestServerMeta{};
-            res = curl_api(curl, url, str_result);
-        } catch (std::exception &e) {
-            response.code = -500;
-            response.msg = "parse json error: " + std::string(e.what());
-            if (curl != nullptr) {
-                curl_easy_cleanup(curl);
-            }
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
             return;
         }
 
-        if (str_result.size() > 0 ) {
-            try {
-                Json::Value json_result;
-                Json::Reader reader;
-                json_result.clear();
-                reader.parse(str_result , json_result);
-
-                if (parse_api_has_error(json_result, response)) {
-                    if (curl != nullptr) {
-                        curl_easy_cleanup(curl);
-                    }
-                    return;
-                }
-
-                if (json_result.isMember("serverTime")) {
-                    uint64_t serverTime = json_result["serverTime"].asUInt64();
-                    response.data = serverTime;
-                    uint64_t now = get_current_ms_epoch();
-                    this->timeOffset = static_cast<long long>(now)-static_cast<long long>(serverTime);
-                }
-            } catch (std::exception &e ) {
-                response.code = -900;
-                response.msg = "parse json error: " + std::string(e.what());
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+            if (json_result.isMember("serverTime")) {
+                uint64_t serverTime = json_result["serverTime"].asUInt64();
+                response.data = serverTime;
+                uint64_t now = get_current_ms_epoch();
+                this->timeOffset = static_cast<long long>(now)-static_cast<long long>(serverTime);
             }
-        } else {
-            // notthing to parse
-            response.code = -100;
-            response.msg = "no response content";
-        }
-
-        if (curl != nullptr) {
-            curl_easy_cleanup(curl);
         }
     }
 
     void BinanceSpotRestClient::get_exchangeInfo(std::vector<std::string>& instIds, CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response) {
         std::string url = this->serverMeta.baseUrl + "/api/v3/exchangeInfo";
-        if (instIds.size() > 0) {
-            url.append("?");
-            if (instIds.size() == 1) {
-                url.append("symbol=").append(instIds.front());
-            } else {
-                for (size_t i = 0; i < instIds.size(); ++i) {
-                    instIds[i] = "\"" + instIds[i] + "\"";
-                }
-                url.append("symbols=[").append(strHelper::joinStrings(instIds, ",")).append("]");
-            }
-        }
-        // TODO Initialize libcurl
-        // curl_global_init(CURL_GLOBAL_DEFAULT);
-        CURL* curl = curl_easy_init();
-    
-        CURLcode res;
-        std::string str_result;
+        binance::CommonRestResponse<std::string> action_response;
 
-        try {
-            res = curl_api(curl, url, str_result);
-        } catch (std::exception &e) {
-            response.code = -500;
-            response.msg = "parse json error: " + std::string(e.what());
-            if (curl != nullptr) {
-                curl_easy_cleanup(curl);
-            }
+        api_action_get_no_sec(url, instIds, action_response);
+
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
             return;
         }
 
-        if (str_result.size() > 0 ) {
-            try {
-                Json::Value json_result;
-                Json::Reader reader;
-                json_result.clear();
-                reader.parse(str_result , json_result);
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
 
-                if (parse_api_has_error(json_result, response)) {
-                    if (curl != nullptr) {
-                        curl_easy_cleanup(curl);
-                    }
-                    return;
-                }
-                
-                // parse json to model
-                if (json_result.isMember("symbols")) {
-                    Json::Value symbols = json_result["symbols"];
-                    for (int i = 0; i < symbols.size(); i++) {
-                        SpotExchangeInfo exchangeInfo;
-                        exchangeInfo.symbol = symbols[i]["symbol"].asString();
-                        exchangeInfo.status = symbols[i]["status"].asString();
-                        exchangeInfo.baseAsset = symbols[i]["baseAsset"].asString();
-                        exchangeInfo.quoteAsset = symbols[i]["quoteAsset"].asString();
-                        if (symbols[i].isMember("orderTypes")) {
-                            for (int j = 0; j < symbols[i]["orderTypes"].size(); j++) {
-                                exchangeInfo.orderTypes.push_back(symbols[i]["orderTypes"][j].asString());
-                            }
+            if (json_result.isMember("symbols")) {
+                Json::Value symbols = json_result["symbols"];
+                for (int i = 0; i < symbols.size(); i++) {
+                    SpotExchangeInfo exchangeInfo;
+                    exchangeInfo.symbol = symbols[i]["symbol"].asString();
+                    exchangeInfo.status = symbols[i]["status"].asString();
+                    exchangeInfo.baseAsset = symbols[i]["baseAsset"].asString();
+                    exchangeInfo.quoteAsset = symbols[i]["quoteAsset"].asString();
+                    if (symbols[i].isMember("orderTypes")) {
+                        for (int j = 0; j < symbols[i]["orderTypes"].size(); j++) {
+                            exchangeInfo.orderTypes.push_back(symbols[i]["orderTypes"][j].asString());
                         }
-                        if (symbols[i].isMember("filters")) {
-                            for (int j = 0; j < symbols[i]["filters"].size(); j++) {
-                                if (symbols[i]["filters"][j].isMember("filterType")) {
-                                    if (symbols[i]["filters"][j]["filterType"].asString() == "PRICE_FILTER") {
-                                        exchangeInfo.minPrice = str_to_dobule(symbols[i]["filters"][j]["minPrice"]);
-                                        exchangeInfo.maxPrice = str_to_dobule(symbols[i]["filters"][j]["maxPrice"]);
-                                        exchangeInfo.tickSize = str_to_dobule(symbols[i]["filters"][j]["tickSize"]);
-                                    } else if (symbols[i]["filters"][j]["filterType"].asString() == "LOT_SIZE") {
-                                        exchangeInfo.minQty = str_to_dobule(symbols[i]["filters"][j]["minQty"]);
-                                        exchangeInfo.maxQty = str_to_dobule(symbols[i]["filters"][j]["maxQty"]);
-                                        exchangeInfo.stepSize = str_to_dobule(symbols[i]["filters"][j]["stepSize"]);
-                                    }
+                    }
+                    if (symbols[i].isMember("filters")) {
+                        for (int j = 0; j < symbols[i]["filters"].size(); j++) {
+                            if (symbols[i]["filters"][j].isMember("filterType")) {
+                                if (symbols[i]["filters"][j]["filterType"].asString() == "PRICE_FILTER") {
+                                    exchangeInfo.minPrice = str_to_dobule(symbols[i]["filters"][j]["minPrice"]);
+                                    exchangeInfo.maxPrice = str_to_dobule(symbols[i]["filters"][j]["maxPrice"]);
+                                    exchangeInfo.tickSize = str_to_dobule(symbols[i]["filters"][j]["tickSize"]);
+                                } else if (symbols[i]["filters"][j]["filterType"].asString() == "LOT_SIZE") {
+                                    exchangeInfo.minQty = str_to_dobule(symbols[i]["filters"][j]["minQty"]);
+                                    exchangeInfo.maxQty = str_to_dobule(symbols[i]["filters"][j]["maxQty"]);
+                                    exchangeInfo.stepSize = str_to_dobule(symbols[i]["filters"][j]["stepSize"]);
                                 }
                             }
                         }
-                        response.data.push_back(exchangeInfo);
                     }
-                    response.code = 0;
+                    response.data.push_back(exchangeInfo);
                 }
-            } catch (std::exception &e ) {
-                response.code = -900;
-                response.msg = "parse json error: " + std::string(e.what());
+                response.code = 0;
             }
-        } else {
-            // notthing to parse
-            response.code = -100;
-            response.msg = "no response content";
-        }
 
-        if (curl != nullptr) {
-            curl_easy_cleanup(curl);
         }
+        
+        // if (instIds.size() > 0) {
+        //     url.append("?");
+        //     if (instIds.size() == 1) {
+        //         url.append("symbol=").append(instIds.front());
+        //     } else {
+        //         for (size_t i = 0; i < instIds.size(); ++i) {
+        //             instIds[i] = "\"" + instIds[i] + "\"";
+        //         }
+        //         url.append("symbols=[").append(strHelper::joinStrings(instIds, ",")).append("]");
+        //     }
+        // }
+        // // TODO Initialize libcurl
+        // // curl_global_init(CURL_GLOBAL_DEFAULT);
+        // CURL* curl = curl_easy_init();
+    
+        // CURLcode res;
+        // std::string str_result;
+
+        // try {
+        //     res = curl_api(curl, url, str_result);
+        // } catch (std::exception &e) {
+        //     response.code = -500;
+        //     response.msg = "parse json error: " + std::string(e.what());
+        //     if (curl != nullptr) {
+        //         curl_easy_cleanup(curl);
+        //     }
+        //     return;
+        // }
+
+        // if (str_result.size() > 0 ) {
+        //     try {
+        //         Json::Value json_result;
+        //         Json::Reader reader;
+        //         json_result.clear();
+        //         reader.parse(str_result , json_result);
+
+        //         if (parse_api_has_error(json_result, response)) {
+        //             if (curl != nullptr) {
+        //                 curl_easy_cleanup(curl);
+        //             }
+        //             return;
+        //         }
+                
+        //         // parse json to model
+        //         if (json_result.isMember("symbols")) {
+        //             Json::Value symbols = json_result["symbols"];
+        //             for (int i = 0; i < symbols.size(); i++) {
+        //                 SpotExchangeInfo exchangeInfo;
+        //                 exchangeInfo.symbol = symbols[i]["symbol"].asString();
+        //                 exchangeInfo.status = symbols[i]["status"].asString();
+        //                 exchangeInfo.baseAsset = symbols[i]["baseAsset"].asString();
+        //                 exchangeInfo.quoteAsset = symbols[i]["quoteAsset"].asString();
+        //                 if (symbols[i].isMember("orderTypes")) {
+        //                     for (int j = 0; j < symbols[i]["orderTypes"].size(); j++) {
+        //                         exchangeInfo.orderTypes.push_back(symbols[i]["orderTypes"][j].asString());
+        //                     }
+        //                 }
+        //                 if (symbols[i].isMember("filters")) {
+        //                     for (int j = 0; j < symbols[i]["filters"].size(); j++) {
+        //                         if (symbols[i]["filters"][j].isMember("filterType")) {
+        //                             if (symbols[i]["filters"][j]["filterType"].asString() == "PRICE_FILTER") {
+        //                                 exchangeInfo.minPrice = str_to_dobule(symbols[i]["filters"][j]["minPrice"]);
+        //                                 exchangeInfo.maxPrice = str_to_dobule(symbols[i]["filters"][j]["maxPrice"]);
+        //                                 exchangeInfo.tickSize = str_to_dobule(symbols[i]["filters"][j]["tickSize"]);
+        //                             } else if (symbols[i]["filters"][j]["filterType"].asString() == "LOT_SIZE") {
+        //                                 exchangeInfo.minQty = str_to_dobule(symbols[i]["filters"][j]["minQty"]);
+        //                                 exchangeInfo.maxQty = str_to_dobule(symbols[i]["filters"][j]["maxQty"]);
+        //                                 exchangeInfo.stepSize = str_to_dobule(symbols[i]["filters"][j]["stepSize"]);
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //                 response.data.push_back(exchangeInfo);
+        //             }
+        //             response.code = 0;
+        //         }
+        //     } catch (std::exception &e ) {
+        //         response.code = -900;
+        //         response.msg = "parse json error: " + std::string(e.what());
+        //     }
+        // } else {
+        //     // notthing to parse
+        //     response.code = -100;
+        //     response.msg = "no response content";
+        // }
+
+        // if (curl != nullptr) {
+        //     curl_easy_cleanup(curl);
+        // }
     }
 
     void BinanceSpotRestClient::get_account(CommonRestResponse<binance::SpotAccount> &response) {
         std::string url = this->serverMeta.baseUrl + "/api/v3/account?";
 
         std::string querystring("timestamp=");
-        querystring.append(std::to_string( get_current_ms_epoch()));
+        querystring.append(std::to_string( get_property_timestamp()));
 
         std::string signature = hmac_sha256(this->secretKey.c_str() , querystring.c_str());
         querystring.append("&signature=");

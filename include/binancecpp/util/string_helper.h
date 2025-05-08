@@ -8,6 +8,9 @@
 class strHelper {
 public:
 
+    template <class T>
+    static std::string toString (const T& t);
+
     // split the string to array
     template <typename TYPE>
     static int splitStr(TYPE& list,
@@ -23,7 +26,29 @@ public:
     static std::string toUpper(std::string& str);
 
     static std::string joinStrings(const std::vector<std::string>& strings, const std::string& delimiter);
+
+    static int replaceStringOnce( std::string& str, const char *from, const char *to, int offset);
+    static bool replaceString( std::string& str, const char *from, const char *to);
 };
+
+
+template <typename T, typename S> inline
+const T strHelper::valueOf(const S& a)
+{
+    std::stringstream s;
+    T t;
+    s << a ; 
+    s >> t;
+    return t;
+}
+
+template <class T> inline
+std::string strHelper::toString (const T& t) {
+    std::stringstream ss;
+    ss << t;
+    return ss.str();
+}
+
 
 template <typename TYPE> inline
 int strHelper::splitStr(TYPE& list,
@@ -64,44 +89,5 @@ int strHelper::splitStr(TYPE& list,
     return count;
 }
 
-template <typename T, typename S> inline
-const T strHelper::valueOf(const S& a)
-{
-    std::stringstream s;
-    T t;
-    s << a ; 
-    s >> t;
-    return t;
-}
-
-inline
-std::string strHelper::toUpper(std::string& str)
-{
-    std::transform(str.begin(), str.end(), str.begin(), [](char& c){
-        return std::toupper(c);
-    });
-	return str;
-}
-
-inline
-std::string strHelper::toLower(std::string& str)
-{
-    std::transform(str.begin(), str.end(), str.begin(), [](char& c){
-        return std::tolower(c);
-    });
-	return str;
-}
-
-inline
-std::string strHelper::joinStrings(const std::vector<std::string>& strings, const std::string& delimiter) {
-    std::ostringstream oss;
-    for (size_t i = 0; i < strings.size(); ++i) {
-        oss << strings[i];
-        if (i != strings.size() - 1) { // Add delimiter between strings
-            oss << delimiter;
-        }
-    }
-    return oss.str();
-}
 
 #endif /* _UTIL_STRING_HELPER_H_ */

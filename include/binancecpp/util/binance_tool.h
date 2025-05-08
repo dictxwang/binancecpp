@@ -185,5 +185,20 @@ namespace binance {
         std::string base64_signature = base64_encode(signature.data(), signature.size());
         return base64_signature;
     }
+
+
+    //--------------------------------
+    static void split_string( std::string &s, char delim, std::vector <std::string> &result) {
+
+        std::stringstream ss;
+        ss.str(s);
+        std::string item;
+        while (std::getline(ss, item, delim)) {
+            result.push_back(item);
+        }
+        
+    }
+
+
 }
 #endif

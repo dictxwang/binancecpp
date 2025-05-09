@@ -4,6 +4,7 @@
 #include <cstring>
 #include <string>
 #include <sstream>
+#include <vector>
 
 class strHelper {
 public:

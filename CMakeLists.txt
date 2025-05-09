@@ -19,7 +19,7 @@ find_dependency(OpenSSL REQUIRED)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CUSTOM_LIB_DIR "/usr/lib/x86_64-linux-gnu")
-    set(CUSTOM_INCLUDE_DIR "/usr/lib/x86_64-linux-gnu")
+    set(CUSTOM_INCLUDE_DIR "/usr/include/x86_64-linux-gnu")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CUSTOM_LIB_DIR "/usr/local/lib")
     set(CUSTOM_INCLUDE_DIR "/usr/local/include")

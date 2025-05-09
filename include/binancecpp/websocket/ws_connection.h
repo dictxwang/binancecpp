@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <random>
 #include <arpa/inet.h>
+#include <stdexcept>
 
 SSL* create_tls_connection(int& socket_fd, const std::string& host, int port, std::string& remote_ip, std::string& local_ip);
 bool perform_websocket_handshake(SSL* ssl, const std::string& host, const std::string& path);

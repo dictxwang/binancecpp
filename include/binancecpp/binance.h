@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 #include <cstdint>
+#include <stdexcept>
 #include <curl/curl.h>
 #include "binance_model.h"
 #include "binance_ws_model.h"

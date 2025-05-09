@@ -2,6 +2,7 @@
 #define _BINANCE_MODEL_H_
 
 #include <iostream>
+#include <vector>
 
 namespace binance {
 

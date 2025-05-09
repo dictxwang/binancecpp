@@ -3,6 +3,8 @@
 
 #include <string>
 #include <algorithm>
+#include <vector>
+#include <cstdint>
 #include <curl/curl.h>
 #include "binance_model.h"
 #include "binance_ws_model.h"

@@ -12,3 +12,6 @@ brew install pkg-config
 brew install openssl
 brew install curl
 brew install libsodium
+
+
+## Could link as 3rdparty in git submodule

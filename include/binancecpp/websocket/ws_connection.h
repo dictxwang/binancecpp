@@ -2,6 +2,7 @@
 #define _WS_CONNECTION_H_
 
 #include <string.h>
+#include <cstring>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <netdb.h>

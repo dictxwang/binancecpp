@@ -80,56 +80,56 @@ namespace binance {
         return res;
     }
 
-    void BinanceRestClient::api_action(std::string &api_url, binance::ApiSecretType sec_type, std::string &method, std::vector <std::string> &header, std::vector <std::string> &query_params, std::vector <std::string> &form_params, binance::CommonRestResponse<std::string> &action_response) {
+    void BinanceRestClient::api_action(std::string &api_url, binance::ApiSecretType sec_type, std::string &method, std::vector <std::string> &extra_header, std::vector <std::string> &query_params, std::vector <std::string> &form_params, binance::CommonRestResponse<std::string> &action_response) {
         std::string queryString;
         std::string formString;
         if (sec_type == binance::ApiSecretType::SecTypeSignature) {
-            // child instance give timestamp
-            // query_params.push_back("timestamp=");
+            // child store the timeOffset, so timestamp should be set by child.
         }
 
         CURL* curl = curl_easy_init();
         CURLcode call_code;
         std::string call_result;
 
-        char* delim = "=";
+        std::string delimiter_split = "=";
+        std::string delimiter_join = "&";
 
         if (!query_params.empty()) {
             std::sort(query_params.begin(), query_params.end());
             std::vector<std::string> sorted_params;
             for (int i = 0; i < query_params.size(); ++i) {
                 std::vector<std::string> pair;
-                strHelper::splitStr(pair, query_params[i], delim);
+                strHelper::splitStr(pair, query_params[i], delimiter_split.c_str());
                 if (pair.size() == 2) {
                     char* escape_value = curl_easy_escape(curl, pair[1].c_str(), 0);
                     sorted_params.push_back(pair[0] + "=" + std::string(escape_value));
                     curl_free(escape_value);
                 }
             }
-            queryString = strHelper::joinStrings(sorted_params, "&");
+            queryString = strHelper::joinStrings(sorted_params, delimiter_join);
         }
 
         if (!form_params.empty()) {
             std::sort(form_params.begin(), form_params.end());
             std::vector<std::string> sorted_params;
-            for (int i = 0; i < query_params.size(); ++i) {
+            for (int i = 0; i < form_params.size(); ++i) {
                 std::vector<std::string> pair;
-                strHelper::splitStr(pair, query_params[i], delim);
+                strHelper::splitStr(pair, form_params[i], delimiter_split.c_str());
                 if (pair.size() == 2) {
                     char* escape_value = curl_easy_escape(curl, pair[1].c_str(), 0);
                     sorted_params.push_back(pair[0] + "=" + std::string(escape_value));
                     curl_free(escape_value);
                 }
             }
-            formString = strHelper::joinStrings(sorted_params, "&");
+            formString = strHelper::joinStrings(sorted_params, delimiter_join);
         }
 
         if (formString.size() != 0) {
-            header.push_back("Content-Type: application/x-www-form-urlencoded");
+            extra_header.push_back("Content-Type: application/x-www-form-urlencoded");
         }
 
         if (sec_type == binance::SecTypeApiKey || sec_type == binance::SecTypeSignature) {
-            header.push_back("X-MBX-APIKEY: " + this->apiKey);
+            extra_header.push_back("X-MBX-APIKEY: " + this->apiKey);
         }
 
         if (sec_type == binance::SecTypeSignature) {
@@ -150,7 +150,7 @@ namespace binance {
         try {
             // Set default server-meta
             binance::RestServerMeta serverMeta = binance::RestServerMeta{};
-            call_code = curl_api_with_header(curl, fullUrl, call_result, header, formString, method);
+            call_code = curl_api_with_header(curl, fullUrl, call_result, extra_header, formString, method);
         } catch (std::exception &e) {
             action_response.code = -500;
             action_response.msg = "parse json error: " + std::string(e.what());

@@ -95,7 +95,7 @@ namespace binance {
             CURLcode curl_api(CURL* curl, std::string &url, std::string &result_json );
 		    CURLcode curl_api_with_header(CURL* curl, std::string &url, std::string &result_json , std::vector <std::string> &extra_http_header, std::string &post_data, std::string &action );
 
-            void api_action(std::string &api_url, binance::ApiSecretType sec_type, std::string &method, std::vector <std::string> &header, std::vector <std::string> &query_params, std::vector <std::string> &body_params, binance::CommonRestResponse<std::string> &action_response);
+            void api_action(std::string &api_url, binance::ApiSecretType sec_type, std::string &method, std::vector <std::string> &extra_header, std::vector <std::string> &query_params, std::vector <std::string> &body_params, binance::CommonRestResponse<std::string> &action_response);
             void api_action_get_no_sec(std::string &api_url, std::vector <std::string> &query_params, binance::CommonRestResponse<std::string> &response);
 		
         protected:

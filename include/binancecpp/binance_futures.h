@@ -3,6 +3,10 @@
 
 #include "binance.h"
 
+/*
+    USD-M Futures
+*/
+
 namespace binance {
 
     class BinanceFuturesRestClient : public BinanceRestClient {
@@ -18,7 +22,16 @@ namespace binance {
         public:
             // Public methods
             void init(const std::string& apiKey, const std::string& secretKey, bool useInternal = false);
+            void setServerTimeOffset(binance::CommonRestResponse<uint64_t> &response);
+
             void get_exchangeInfo(CommonRestResponse<std::vector<binance::FuturesExchangeInfo>> &response);
+            void get_account_v2(CommonRestResponse<binance::FuturesAccount> &response);
+            void get_commissionRate(std::string &symbol, CommonRestResponse<binance::FuturesCommissionRate> &response);
+            void get_accountConfig(CommonRestResponse<binance::FuturesAccountConfig> &response);
+            void get_symbolConfig(std::string &symbol, CommonRestResponse<binance::FuturesSymbolConfig> &response);
+        
+        private:
+            uint64_t get_property_timestamp();
     };
 }
 #endif

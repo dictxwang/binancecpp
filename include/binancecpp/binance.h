@@ -108,7 +108,7 @@ namespace binance {
             binance::RestServerMeta serverMeta;
             MarketType marketType;
 
-        public:
+        protected:
             long timeOffset = 0;
     };
 }

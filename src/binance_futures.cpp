@@ -123,11 +123,10 @@ namespace binance {
             return;
         }
 
-        std::cout << "response data: " << action_response.data << std::endl;
+        // std::cout << "response data: " << action_response.data << std::endl;
 
         // Parse json value
         if (action_response.data.size() > 0) {
-            // std::cout << action_response.data << std::endl;
             Json::Value json_result;
             Json::Reader reader;
             json_result.clear();
@@ -351,14 +350,14 @@ namespace binance {
     }
 
     void BinanceFuturesRestClient::get_multiAssetMargin(CommonRestResponse<bool> &response) {
-        std::string url = this->serverMeta.baseUrl + "/fapi/v1/rateLimit/order";
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/multiAssetsMargin";
 
         binance::CommonRestResponse<std::string> action_response;
         std::string action = "GET";
         std::vector <std::string> empty;
         std::vector <std::string> query_params;
-        // query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
-        api_action(url, binance::SecTypeApiKey, action, empty, query_params, empty, action_response);
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, empty, action_response);
         if (action_response.code != 0) {
             response.code = action_response.code;
             response.msg = action_response.msg;

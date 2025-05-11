@@ -177,6 +177,11 @@ namespace binance {
         double maxNotionalValue;
     };
 
+    struct FuturesChangeLeverageResult {
+        string symbol;
+        double maxNotionalValue;
+        int leverage;
+    };
 
     /* End: structs of futures */
 }

@@ -447,7 +447,7 @@ namespace binance {
         std::vector <std::string> query_params;
         std::vector <std::string> body_params;
         query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
-        body_params.push_back("feeBurn=" + std::to_string(feeBurn));
+        body_params.push_back("feeBurn=" + strHelper::toString(feeBurn));
         api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
         if (action_response.code != 0) {
             response.code = action_response.code;
@@ -477,4 +477,209 @@ namespace binance {
             }
         }
     }
+    void BinanceFuturesRestClient::change_marginType(std::string &symbol, std::string &marginType, CommonRestResponse<bool> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/marginType";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "POST";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        std::vector <std::string> body_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        body_params.push_back("symbol=" + symbol);
+        body_params.push_back("marginType=" + marginType);
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("code")) {
+                int code = json_result["code"].asInt();
+                if (code == 200) {
+                    response.data = true;
+                } else {
+                    response.code = code;
+                    if (json_result.isMember("msg")) {
+                        response.msg = json_result["msg"].asString();
+                    }
+                }
+            } else {
+                response.code = -404;
+                response.msg = "result not return";
+            }
+        }
+    }
+
+    void BinanceFuturesRestClient::change_positionSideDual(bool dualSidePosition, CommonRestResponse<bool> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/positionSide/dual";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "POST";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        std::vector <std::string> body_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        body_params.push_back("dualSidePosition=" + strHelper::toString(dualSidePosition));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("code")) {
+                int code = json_result["code"].asInt();
+                if (code == 200) {
+                    response.data = true;
+                } else {
+                    response.code = code;
+                    if (json_result.isMember("msg")) {
+                        response.msg = json_result["msg"].asString();
+                    }
+                }
+            } else {
+                response.code = -404;
+                response.msg = "result not return";
+            }
+        }
+    }
+
+    void BinanceFuturesRestClient::change_initialLeverage(std::string &symbol, int leverage, CommonRestResponse<FuturesChangeLeverageResult> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/leverage";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "POST";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        std::vector <std::string> body_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        body_params.push_back("symbol=" + symbol);
+        body_params.push_back("leverage=" + std::to_string(leverage));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            binance::FuturesChangeLeverageResult result;
+            if (json_result.isMember("symbol")) {
+                result.symbol = json_result["symbol"].asString();
+            }
+            if (json_result.isMember("leverage")) {
+                result.leverage = json_result["leverage"].asInt();
+            }
+            if (json_result.isMember("maxNotionalValue")) {
+                result.maxNotionalValue = str_to_dobule(json_result["maxNotionalValue"]);
+            }
+
+            response.data = result;
+        }
+    }
+
+    void BinanceFuturesRestClient::change_multiAssetsMargin(bool multiAssetsMargin, CommonRestResponse<bool> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/multiAssetsMargin";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "POST";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        std::vector <std::string> body_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        body_params.push_back("multiAssetsMargin=" + strHelper::toString(multiAssetsMargin));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("code")) {
+                int code = json_result["code"].asInt();
+                if (code == 200) {
+                    response.data = true;
+                } else {
+                    response.code = code;
+                    if (json_result.isMember("msg")) {
+                        response.msg = json_result["msg"].asString();
+                    }
+                }
+            } else {
+                response.code = -404;
+                response.msg = "result not return";
+            }
+        }
+    }
+
+    void BinanceFuturesRestClient::modify_isolatedPositionMargin(std::string &symbol, std::string &positionSide, double amount, int type, CommonRestResponse<bool> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/positionMargin";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "POST";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        std::vector <std::string> body_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        body_params.push_back("symbol=" + symbol);
+        if (positionSide.size() > 0) {
+            body_params.push_back("positionSide=" + positionSide);
+        }
+        body_params.push_back("amount=" + strHelper::toString(amount));
+        body_params.push_back("type=" + strHelper::toString(type));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("code")) {
+                int code = json_result["code"].asInt();
+                if (code == 200) {
+                    response.data = true;
+                } else {
+                    response.code = code;
+                    if (json_result.isMember("msg")) {
+                        response.msg = json_result["msg"].asString();
+                    }
+                }
+            } else {
+                response.code = -404;
+                response.msg = "result not return";
+            }
+        }
+    }
+
 }

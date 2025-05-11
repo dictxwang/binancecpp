@@ -33,7 +33,13 @@ namespace binance {
             void get_multiAssetMargin(CommonRestResponse<bool> &response);
             void get_positionSideDual(CommonRestResponse<bool> &response);
             void get_bnbFeeBurn(CommonRestResponse<bool> &response);
+
             void toggle_bnbFeeBurn(bool feeBurn, CommonRestResponse<bool> &response);
+            void change_marginType(std::string &symbol, std::string &marginType, CommonRestResponse<bool> &response);
+            void change_positionSideDual(bool dualSidePosition, CommonRestResponse<bool> &response);
+            void change_initialLeverage(std::string &symbol, int leverage, CommonRestResponse<FuturesChangeLeverageResult> &response);
+            void change_multiAssetsMargin(bool multiAssetsMargin, CommonRestResponse<bool> &response);
+            void modify_isolatedPositionMargin(std::string &symbol, std::string &positionSide, double amount, int type, CommonRestResponse<bool> &response);
         
         private:
             uint64_t get_property_timestamp();

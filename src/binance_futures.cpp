@@ -123,6 +123,8 @@ namespace binance {
             return;
         }
 
+        std::cout << "response data: " << action_response.data << std::endl;
+
         // Parse json value
         if (action_response.data.size() > 0) {
             // std::cout << action_response.data << std::endl;
@@ -311,4 +313,74 @@ namespace binance {
             response.data = config;
         }
     }
+
+    void BinanceFuturesRestClient::get_orderRateLimit(CommonRestResponse<std::vector<binance::OrderRateLimit>> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/rateLimit/order";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "GET";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, empty, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isArray()) {
+                std::vector<binance::OrderRateLimit> data;
+                for (int i = 1; i < json_result.size(); i++) {
+                    binance::OrderRateLimit rateLimit;
+                    rateLimit.rateLimitType = json_result[i]["rateLimitType"].asString();
+                    rateLimit.interval = json_result[i]["interval"].asString();
+                    rateLimit.intervalNum = json_result[i]["intervalNum"].asInt();
+                    rateLimit.limit = json_result[i]["limit"].asInt();
+                    data.push_back(rateLimit);
+                }
+                response.data = data;
+            }
+        }
+    }
+
+    void BinanceFuturesRestClient::get_multiAssetMargin(CommonRestResponse<bool> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/rateLimit/order";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "GET";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        // query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        api_action(url, binance::SecTypeApiKey, action, empty, query_params, empty, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("multiAssetsMargin")) {
+                response.data = json_result["multiAssetsMargin"].asBool();
+            }
+        }
+    }
+
+    void BinanceFuturesRestClient::get_positionSideDual(CommonRestResponse<bool> &response) {
+
+    }
+
+    void BinanceFuturesRestClient::get_bnbFeeBurn(CommonRestResponse<bool> &response) {}
+    void BinanceFuturesRestClient::toggle_bnbFeeBurn(bool feeBurn, CommonRestResponse<void> &response) {}
 }

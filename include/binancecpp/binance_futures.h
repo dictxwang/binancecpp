@@ -29,6 +29,11 @@ namespace binance {
             void get_commissionRate(std::string &symbol, CommonRestResponse<binance::FuturesCommissionRate> &response);
             void get_accountConfig(CommonRestResponse<binance::FuturesAccountConfig> &response);
             void get_symbolConfig(std::string &symbol, CommonRestResponse<binance::FuturesSymbolConfig> &response);
+            void get_orderRateLimit(CommonRestResponse<std::vector<binance::OrderRateLimit>> &response);
+            void get_multiAssetMargin(CommonRestResponse<bool> &response);
+            void get_positionSideDual(CommonRestResponse<bool> &response);
+            void get_bnbFeeBurn(CommonRestResponse<bool> &response);
+            void toggle_bnbFeeBurn(bool feeBurn, CommonRestResponse<void> &response);
         
         private:
             uint64_t get_property_timestamp();

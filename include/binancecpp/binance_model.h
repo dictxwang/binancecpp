@@ -16,6 +16,15 @@ namespace binance {
         string msg;
     };
 
+    /* Start: structs of common */
+    struct OrderRateLimit {
+        string rateLimitType;
+        string interval;
+        int intervalNum;
+        int limit;
+    };
+    /* End: structs of common */
+
     /* Start: structs of spot */
     struct SpotExchangeInfo {
         string symbol;
@@ -167,6 +176,7 @@ namespace binance {
         int leverage;
         double maxNotionalValue;
     };
+
 
     /* End: structs of futures */
 }

@@ -33,6 +33,9 @@ namespace binance {
             void get_multiAssetMargin(CommonRestResponse<bool> &response);
             void get_positionSideDual(CommonRestResponse<bool> &response);
             void get_bnbFeeBurn(CommonRestResponse<bool> &response);
+            void get_positionRiskV2(std::string &symbol, CommonRestResponse<std::vector<FuturesPositionRisk>> &response);
+            void get_tickerPriceV2(std::string &symbol, CommonRestResponse<std::vector<FuturesSymbolPriceTicker>> &response);
+            void get_premiumIndex(std::string &symbol, CommonRestResponse<std::vector<FuturesPremiumIndex>> &response);
 
             void toggle_bnbFeeBurn(bool feeBurn, CommonRestResponse<bool> &response);
             void change_marginType(std::string &symbol, std::string &marginType, CommonRestResponse<bool> &response);

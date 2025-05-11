@@ -1,3 +1,62 @@
 #include "binancecpp/binance_ws_futures.h"
 
-namespace binance {}
+namespace binance {
+
+    void BinanceFuturesWsClient::initBookTickerV1(bool useInternal, bool useCombine) {
+        BinanceWsClient::init("","", MarketType::FUTURES, useInternal, useCombine, false);
+    }
+
+    bool BinanceFuturesWsClient::startBookTickerV1(WS_CB customCallback, std::vector<std::string>& symbols) {
+        
+        if (symbols.size() == 0) {
+            return false;
+        }
+
+        std::string listenPath;
+        for (size_t i = 0; i < symbols.size(); ++i) {
+            listenPath.append(symbols[i]).append("@bookTicker");
+            if (i < symbols.size() - 1) {
+                listenPath.append("/");
+            }
+        }
+        std::string endpoint = this->wsEndpoint.third;
+        if (!this->useCombine && !this->useTrading) {
+            endpoint.append("/");
+        }
+        endpoint.append(listenPath);
+
+        bool result = this->connect_endpoint(endpoint);
+        if (!result) {
+            return result;
+        }
+
+        // Not require logon and subscribe
+
+        return this->start_event_loop(customCallback);
+    }
+
+    bool BinanceFuturesWsClient::startAllBookTickersV1(WS_CB customCallback) {std::string endpoint = this->wsEndpoint.third;
+        
+        if (!this->useCombine && !this->useTrading) {
+            endpoint.append("/");
+        }
+        endpoint.append("!bookTicker");
+        
+        bool result = this->connect_endpoint(endpoint);
+        if (!result) {
+            return result;
+        }
+
+        // Not require logon and subscribe
+
+        return this->start_event_loop(customCallback);
+    }
+
+    void BinanceFuturesWsClient::initMarkPriceV1(bool useInternal, bool useCombine) {
+        BinanceWsClient::init("","", MarketType::FUTURES, useInternal, useCombine, false);
+    }
+
+    bool BinanceFuturesWsClient::startMarkPriceV1(WS_CB customCallback, std::vector<std::string>& symbols) {
+        return true;
+    }
+}

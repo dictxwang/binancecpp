@@ -106,4 +106,59 @@ namespace binance {
 
         return event;
     }
+
+    WsFuturesBookTickerEvent convertJsonToWsFuturesBookTickerEvent(Json::Value &json_value) {
+        WsFuturesBookTickerEvent event;
+        if (json_value.isMember("s")) {
+            event.symbol = json_value["s"].asString();
+        }
+        if (json_value.isMember("E")) {
+            event.eventTime = json_value["E"].asUInt64();
+        }
+        if (json_value.isMember("T")) {
+            event.transactionTime = json_value["T"].asUInt64();
+        }
+        if (json_value.isMember("u")) {
+            event.updateId = json_value["u"].asUInt64();
+        }
+        if (json_value.isMember("a")) {
+            event.bestAskPrice = str_to_dobule(json_value["a"]);
+        }
+        if (json_value.isMember("A")) {
+            event.bestAskQty = str_to_dobule(json_value["A"]);
+        }
+        if (json_value.isMember("b")) {
+            event.bestBidPrice = str_to_dobule(json_value["b"]);
+        }
+        if (json_value.isMember("B")) {
+            event.bestBidQty = str_to_dobule(json_value["B"]);
+        }
+        return event;
+    }
+
+    WsFuturesMarkPriceEvent convertJsonToWsFuturesMarkPriceEvent(Json::Value &json_value) {
+        WsFuturesMarkPriceEvent event;
+        if (json_value.isMember("E")) {
+            event.eventTime = json_value["E"].asUInt64();
+        }
+        if (json_value.isMember("s")) {
+            event.symbol = json_value["s"].asString();
+        }
+        if (json_value.isMember("p")) {
+            event.markPrice = str_to_dobule(json_value["p"]);
+        }
+        if (json_value.isMember("i")) {
+            event.indexPrice = str_to_dobule(json_value["i"]);
+        }
+        if (json_value.isMember("P")) {
+            event.estimatedSettlePrice = str_to_dobule(json_value["P"]);
+        }
+        if (json_value.isMember("r")) {
+            event.fundingRate = str_to_dobule(json_value["r"]);
+        }
+        if (json_value.isMember("T")) {
+            event.nextFundingTime = json_value["T"].asUInt64();
+        }
+        return event;
+    }
 }

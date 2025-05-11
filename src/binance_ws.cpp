@@ -13,6 +13,8 @@ namespace binance {
         this->secretKey = secretKey;
         this->marketType = marketType;
         this->useInternal = useInternal;
+        this->useCombine = useCombine;
+        this->useTrading = useTrading;
         if (isTrading) {
             this->wsEndpoint = getWsTradingEndpoint(marketType, useInternal);
         } else {

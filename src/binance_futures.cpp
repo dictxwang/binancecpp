@@ -682,4 +682,148 @@ namespace binance {
         }
     }
 
+    void BinanceFuturesRestClient::get_positionRiskV2(std::string &symbol, CommonRestResponse<std::vector<FuturesPositionRisk>> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v2/positionRisk";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "GET";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        if (symbol.size() > 0) {
+            query_params.push_back("symbol=" + symbol);
+        }
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, empty, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+            
+            if (json_result.isArray()) {
+                for (int i = 0; i < json_result.size(); i++) {
+                    binance::FuturesPositionRisk positionRisk;
+                    positionRisk.symbol = json_result[i]["symbol"].asString();
+                    positionRisk.positionAmt = str_to_dobule(json_result[i]["positionAmt"]);
+                    positionRisk.entryPrice = str_to_dobule(json_result[i]["entryPrice"]);
+                    positionRisk.breakEvenPrice = str_to_dobule(json_result[i]["breakEvenPrice"]);
+                    positionRisk.markPrice = str_to_dobule(json_result[i]["markPrice"]);
+                    positionRisk.unRealizedProfit = str_to_dobule(json_result[i]["unRealizedProfit"]);
+                    positionRisk.liquidationPrice = str_to_dobule(json_result[i]["liquidationPrice"]);
+                    if (json_result[i]["leverage"].isString()) {
+                        positionRisk.leverage = std::stoi(json_result[i]["leverage"].asString());
+                    } else if (json_result[i]["leverage"].isInt()) {
+                        positionRisk.leverage = json_result[i]["leverage"].asInt();
+                    }
+                    positionRisk.maxNotionalValue = str_to_dobule(json_result[i]["maxNotionalValue"]);
+                    positionRisk.marginType = json_result[i]["marginType"].asString();
+                    positionRisk.isolatedMargin = str_to_dobule(json_result[i]["isolatedMargin"]);
+                    positionRisk.isAutoAddMargin = json_result[i]["isAutoAddMargin"].asBool();
+                    positionRisk.positionSide = json_result[i]["positionSide"].asString();
+                    positionRisk.notional = str_to_dobule(json_result[i]["notional"]);
+                    positionRisk.isolatedWallet = str_to_dobule(json_result[i]["isolatedWallet"]);
+                    positionRisk.updateTime = json_result[i]["updateTime"].asUInt64();
+
+                    response.data.push_back(positionRisk);
+                }
+            }
+        }
+    }
+
+    void BinanceFuturesRestClient::get_tickerPriceV2(std::string &symbol, CommonRestResponse<std::vector<FuturesSymbolPriceTicker>> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v2/ticker/price";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "GET";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        if (symbol.size() > 0) {
+            query_params.push_back("symbol=" + symbol);
+        }
+        api_action(url, binance::SecTypeNone, action, empty, query_params, empty, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isArray()) {
+                for (int i = 0; i < json_result.size(); i++) {
+                    binance::FuturesSymbolPriceTicker ticker;
+                    ticker.symbol = json_result[i]["symbol"].asString();
+                    ticker.price = str_to_dobule(json_result[i]["price"]);
+                    ticker.time = json_result[i]["time"].asUInt64();
+                    response.data.push_back(ticker);
+                }
+            } else {
+                binance::FuturesSymbolPriceTicker ticker;
+                ticker.symbol = json_result["symbol"].asString();
+                ticker.price = str_to_dobule(json_result["price"]);
+                ticker.time = json_result["time"].asUInt64();
+                response.data.push_back(ticker);
+            }
+        }
+    }
+    void BinanceFuturesRestClient::get_premiumIndex(std::string &symbol, CommonRestResponse<std::vector<FuturesPremiumIndex>> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/premiumIndex";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "GET";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        if (symbol.size() > 0) {
+            query_params.push_back("symbol=" + symbol);
+        }
+        api_action(url, binance::SecTypeNone, action, empty, query_params, empty, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isArray()) {
+                for (int i = 0; i < json_result.size(); i++) {
+                    binance::FuturesPremiumIndex index;
+                    index.symbol = json_result["symbol"].asString();
+                    index.markPrice = str_to_dobule(json_result["markPrice"]);
+                    index.indexPrice = str_to_dobule(json_result["indexPrice"]);
+                    index.estimatedSettlePrice = str_to_dobule(json_result["estimatedSettlePrice"]);
+                    index.lastFundingRate = str_to_dobule(json_result["lastFundingRate"]);
+                    index.interestRate = str_to_dobule(json_result["interestRate"]);
+                    index.nextFundingTime = json_result["nextFundingTime"].asUInt64();
+                    index.time = json_result["time"].asUInt64();
+                    response.data.push_back(index);
+                }
+            } else {
+                binance::FuturesPremiumIndex index;
+                index.symbol = json_result["symbol"].asString();
+                index.markPrice = str_to_dobule(json_result["markPrice"]);
+                index.indexPrice = str_to_dobule(json_result["indexPrice"]);
+                index.estimatedSettlePrice = str_to_dobule(json_result["estimatedSettlePrice"]);
+                index.lastFundingRate = str_to_dobule(json_result["lastFundingRate"]);
+                index.interestRate = str_to_dobule(json_result["interestRate"]);
+                index.nextFundingTime = json_result["nextFundingTime"].asUInt64();
+                index.time = json_result["time"].asUInt64();
+                response.data.push_back(index);
+            }
+        }
+    }
 }

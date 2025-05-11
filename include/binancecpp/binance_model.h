@@ -183,6 +183,42 @@ namespace binance {
         int leverage;
     };
 
+    struct FuturesPositionRisk {
+        string symbol;
+        double positionAmt;
+        double entryPrice;
+        double breakEvenPrice;
+        double markPrice;
+        double unRealizedProfit;
+        double liquidationPrice;
+        int leverage;
+        double maxNotionalValue;
+        string marginType;
+        double isolatedMargin;
+        bool isAutoAddMargin;
+        string positionSide;
+        double notional;
+        double isolatedWallet;
+        uint64_t updateTime;
+    };
+
+    struct FuturesSymbolPriceTicker {
+        string symbol;
+        double price;
+        uint64_t time;
+    };
+
+    struct FuturesPremiumIndex {
+        string symbol;
+        double markPrice;
+        double indexPrice;
+        double estimatedSettlePrice;
+        double lastFundingRate;
+        double interestRate;
+        uint64_t nextFundingTime;
+        uint64_t time;
+    };
+
     /* End: structs of futures */
 }
 

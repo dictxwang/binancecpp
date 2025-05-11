@@ -121,6 +121,8 @@ namespace binance {
         triple<string, int, string> wsEndpoint;
         MarketType marketType;
         bool useInternal;
+        bool useCombine;
+        bool useTrading;
 
         int socketFd;
         SSL* ssl;

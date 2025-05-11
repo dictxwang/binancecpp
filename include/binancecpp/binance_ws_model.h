@@ -88,5 +88,32 @@ namespace binance {
     WsSpotAccountUpdateEvent convertJsonToWsWsSpotAccountUpdateEvent(Json::Value &json_value);
     WsSpotOrderUpdateEvent convertJsonToWsSpotOrderUpdateEvent(Json::Value &json_value);
 
+    /* Start Futures */
+    struct WsFuturesMarkPriceEvent {
+        uint64_t eventTime;
+        string symbol;
+        double markPrice;
+        double indexPrice;
+        double estimatedSettlePrice; // only useful in the last hour before the settlement starts
+        double fundingRate;
+        uint64_t nextFundingTime;
+    };
+
+    struct WsFuturesBookTickerEvent {
+        uint64_t eventTime;
+        uint64_t transactionTime;
+        uint64_t updateId;
+        string symbol;
+        double bestBidPrice;  // b
+        double bestBidQty;  // B
+        double bestAskPrice;  // a
+        double bestAskQty;  // A
+    };
+    
+    WsFuturesMarkPriceEvent convertJsonToWsFuturesMarkPriceEvent(Json::Value &json_value);
+    WsFuturesBookTickerEvent convertJsonToWsFuturesBookTickerEvent(Json::Value &json_value);
+
+    /* End Futures */
+
 }
 #endif

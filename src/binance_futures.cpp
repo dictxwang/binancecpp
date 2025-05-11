@@ -372,14 +372,109 @@ namespace binance {
 
             if (json_result.isMember("multiAssetsMargin")) {
                 response.data = json_result["multiAssetsMargin"].asBool();
+            } else {
+                response.code = -404;
+                response.msg = "multiAssetsMargin not found";
             }
         }
     }
 
     void BinanceFuturesRestClient::get_positionSideDual(CommonRestResponse<bool> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/positionSide/dual";
 
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "GET";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, empty, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("dualSidePosition")) {
+                response.data = json_result["dualSidePosition"].asBool();
+            } else {
+                response.code = -404;
+                response.msg = "dualSidePosition not found";
+            }
+        }
     }
 
-    void BinanceFuturesRestClient::get_bnbFeeBurn(CommonRestResponse<bool> &response) {}
-    void BinanceFuturesRestClient::toggle_bnbFeeBurn(bool feeBurn, CommonRestResponse<void> &response) {}
+    void BinanceFuturesRestClient::get_bnbFeeBurn(CommonRestResponse<bool> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/feeBurn";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "GET";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, empty, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("feeBurn")) {
+                response.data = json_result["feeBurn"].asBool();
+            } else {
+                response.code = -404;
+                response.msg = "feeBurn not found";
+            }
+        }
+    }
+    void BinanceFuturesRestClient::toggle_bnbFeeBurn(bool feeBurn, CommonRestResponse<bool> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/feeBurn";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "POST";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        std::vector <std::string> body_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        body_params.push_back("feeBurn=" + std::to_string(feeBurn));
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("code")) {
+                int code = json_result["code"].asInt();
+                if (code == 200) {
+                    response.data = feeBurn;
+                } else {
+                    response.code = code;
+                    if (json_result.isMember("msg")) {
+                        response.msg = json_result["msg"].asString();
+                    }
+                }
+            } else {
+                response.code = -404;
+                response.msg = "result not return";
+            }
+        }
+    }
 }

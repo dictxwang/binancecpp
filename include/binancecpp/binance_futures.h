@@ -33,7 +33,7 @@ namespace binance {
             void get_multiAssetMargin(CommonRestResponse<bool> &response);
             void get_positionSideDual(CommonRestResponse<bool> &response);
             void get_bnbFeeBurn(CommonRestResponse<bool> &response);
-            void toggle_bnbFeeBurn(bool feeBurn, CommonRestResponse<void> &response);
+            void toggle_bnbFeeBurn(bool feeBurn, CommonRestResponse<bool> &response);
         
         private:
             uint64_t get_property_timestamp();

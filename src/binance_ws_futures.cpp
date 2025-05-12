@@ -108,4 +108,25 @@ namespace binance {
 
         return this->start_event_loop(customCallback);
     }
+
+    void BinanceFuturesWsClient::initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal) {
+        BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, false);
+    }
+
+    bool BinanceFuturesWsClient::startUserDataStreamV1(WS_CB customCallback, std::string listenKey) {
+
+        if (listenKey.size() == 0) {
+            return false;
+        }
+
+        std::string endpoint = this->wsEndpoint.third + "/" + listenKey;
+        bool result = this->connect_endpoint(endpoint);
+        if (!result) {
+            return result;
+        }
+
+        // Not require logon and subscribe
+
+        return this->start_event_loop(customCallback);
+    }
 }

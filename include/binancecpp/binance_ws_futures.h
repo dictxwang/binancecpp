@@ -19,5 +19,8 @@ namespace binance {
         void initMarkPriceV1(bool useInternal, bool useCombine);
         bool startMarkPriceV1(WS_CB customCallback, std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval);
         bool startAllMarkPricesV1(WS_CB customCallback, binance::WsMarkPriceInterval interval);
+
+        void initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal);
+        bool startUserDataStreamV1(WS_CB customCallback, std::string listenKey);
     };
 }

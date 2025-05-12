@@ -826,4 +826,49 @@ namespace binance {
             }
         }
     }
+
+    void BinanceFuturesRestClient::start_userDataStream(CommonRestResponse<std::string> &response) {
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/listenKey";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "POST";
+        std::vector <std::string> empty;
+        api_action(url, binance::SecTypeApiKey, action, empty, empty, empty, action_response);
+
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            if (json_result.isMember("listenKey")) {
+                response.data = json_result["listenKey"].asString();
+            }
+        }
+    }
+
+    void BinanceFuturesRestClient::keep_userDataStream(const std::string listenKey, CommonRestResponse<std::string> &response) {
+
+        std::string url = this->serverMeta.baseUrl + "/fapi/v1/listenKey";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "PUT";
+        std::vector <std::string> form_params;
+        std::vector <std::string> empty;
+        form_params.push_back("listenKey=" + listenKey);
+        api_action(url, binance::SecTypeApiKey, action, empty, empty, form_params, action_response);
+
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+    }
 }

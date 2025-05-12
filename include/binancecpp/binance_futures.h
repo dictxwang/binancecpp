@@ -43,6 +43,9 @@ namespace binance {
             void change_initialLeverage(std::string &symbol, int leverage, CommonRestResponse<FuturesChangeLeverageResult> &response);
             void change_multiAssetsMargin(bool multiAssetsMargin, CommonRestResponse<bool> &response);
             void modify_isolatedPositionMargin(std::string &symbol, std::string &positionSide, double amount, int type, CommonRestResponse<bool> &response);
+
+            void start_userDataStream(CommonRestResponse<std::string> &response);
+            void keep_userDataStream(const std::string listenKey, CommonRestResponse<std::string> &response);
         
         private:
             uint64_t get_property_timestamp();

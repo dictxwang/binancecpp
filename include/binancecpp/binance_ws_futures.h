@@ -22,6 +22,7 @@ namespace binance {
 
         void initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal);
         bool startUserDataStreamV1(WS_CB customCallback, std::string listenKey);
+        // TODO: unavailable
         void initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal);
         bool startUserDataStream(WS_CB customCallback);
     };

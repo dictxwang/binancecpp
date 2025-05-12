@@ -14,7 +14,7 @@ namespace binance {
         this->marketType = marketType;
         this->useInternal = useInternal;
         this->useCombine = useCombine;
-        this->useTrading = useTrading;
+        this->useTrading = isTrading;
         if (isTrading) {
             this->wsEndpoint = getWsTradingEndpoint(marketType, useInternal);
         } else {
@@ -101,6 +101,11 @@ namespace binance {
 
         char buffer[1024];
         int len = SSL_read(this->ssl, buffer, sizeof(buffer) - 1);
+        if (len <= 20) {
+            // Maybe read a timestamp data firstly, so read once more
+            std::memset(buffer, 0, sizeof(buffer));
+            len = SSL_read(this->ssl, buffer, sizeof(buffer) - 1);
+        }
         if (len < 0) {
             throw std::runtime_error("failed to receive logon response");
         } else {

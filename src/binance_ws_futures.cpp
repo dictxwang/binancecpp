@@ -129,4 +129,40 @@ namespace binance {
 
         return this->start_event_loop(customCallback);
     }
+
+    void BinanceFuturesWsClient::initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal) {
+
+        BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, true);
+    }
+
+    bool BinanceFuturesWsClient::startUserDataStream(WS_CB customCallback) {
+
+        std::string endpoint = this->wsEndpoint.third;
+        bool result = this->connect_endpoint(endpoint);
+        if (!result) {
+            return result;
+        }
+
+        // session logon
+        result = this->send_session_logon();
+        if (!result) {
+            return result;
+        }
+
+        // start
+        Json::Value paramsJson;
+        paramsJson["apiKey"] = this->apiKey;
+        Json::Value reqJson;
+        reqJson["id"] = this->sessionID;
+        reqJson["method"] = "userDataStream.start";
+        reqJson["params"] = paramsJson;
+        std::string subscribeMessage = serialize_json_value(reqJson);
+
+        result = this->send_subscribe(subscribeMessage);
+        if (!result) {
+            return result;
+        }
+
+        return this->start_event_loop(customCallback);
+    }
 }

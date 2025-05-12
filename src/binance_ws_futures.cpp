@@ -14,7 +14,7 @@ namespace binance {
 
         std::string listenPath;
         for (size_t i = 0; i < symbols.size(); ++i) {
-            listenPath.append(symbols[i]).append("@bookTicker");
+            listenPath.append(strHelper::toLower(symbols[i])).append("@bookTicker");
             if (i < symbols.size() - 1) {
                 listenPath.append("/");
             }
@@ -64,7 +64,7 @@ namespace binance {
 
         std::string listenPath;
         for (size_t i = 0; i < symbols.size(); ++i) {
-            listenPath.append(symbols[i]).append("@markPrice");
+            listenPath.append(strHelper::toLower(symbols[i])).append("@markPrice");
             if (interval == binance::WsMPOneSecond) {
                 listenPath.append("@1s");
             }

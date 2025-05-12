@@ -17,6 +17,11 @@ namespace binance {
         PORTFOLIO,
     };
 
+    enum WsMarkPriceInterval {
+        WsMPThreeSeconds,
+        WsMPOneSecond,
+    };
+
     const string MarginType_ISOLATED = "ISOLATED";
     const string MarginType_CROSSED = "CROSSED";
 

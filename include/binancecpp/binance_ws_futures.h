@@ -17,6 +17,7 @@ namespace binance {
         bool startAllBookTickersV1(WS_CB customCallback);
 
         void initMarkPriceV1(bool useInternal, bool useCombine);
-        bool startMarkPriceV1(WS_CB customCallback, std::vector<std::string>& symbols);
+        bool startMarkPriceV1(WS_CB customCallback, std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval);
+        bool startAllMarkPricesV1(WS_CB customCallback, binance::WsMarkPriceInterval interval);
     };
 }

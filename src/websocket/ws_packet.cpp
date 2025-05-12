@@ -82,7 +82,7 @@ uint64_t WebSocketPacket::recv_dataframe(ByteBuffer &input)
 	if (payload_length_ + header_size > input.length())
 	{
 		// buffer size is not enough, so we continue recving data
-		std::cout << "WebSocketPacket: recv_dataframe: continue recving data." << std::endl;
+		// std::cout << "WebSocketPacket: recv_dataframe: continue recving data." << std::endl;
 		input.resetoft();
         input.skip_x(oft);
 		return 0;
@@ -136,8 +136,10 @@ int32_t WebSocketPacket::fetch_frame_info(ByteBuffer &input)
 		len = (array[0] << 56) | array[1] << 48 | array[2] << 40 | array[3] << 32 
 		| array[4] << 24 | array[5] << 16 | array[6] << 8 | array[7];
 
+		payload_length_ = len;
 		if (payload_length_ > 0xFFFFFFFF)
 		{
+			// TODO: process invalid length
 		}
 	}
 	else

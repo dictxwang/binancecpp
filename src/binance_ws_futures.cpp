@@ -214,7 +214,8 @@ namespace binance {
         std::string reqId = generate_uuid();
 
         Json::Value paramsJson;
-        paramsJson["apiKey"] = this->apiKey;
+        // Warning: If give apiKey, signature will be also required.
+        // paramsJson["apiKey"] = this->apiKey;
         paramsJson["timestamp"] = Json::UInt64(timestamp);
 
         paramsJson["symbol"] = order.symbol;
@@ -222,6 +223,7 @@ namespace binance {
         paramsJson["positionSide"] = order.positionSide;
         paramsJson["type"] = order.type;
         paramsJson["quantity"] = order.quantity;
+        paramsJson["timeInForce"] = order.timeInForce;
         if (order.price != 0) {
             paramsJson["price"] = order.price;
         }
@@ -279,7 +281,8 @@ namespace binance {
         std::string reqId = generate_uuid();
 
         Json::Value paramsJson;
-        paramsJson["apiKey"] = this->apiKey;
+        // Warning: If give apiKey, signature will be also required.
+        // paramsJson["apiKey"] = this->apiKey;
         paramsJson["timestamp"] = Json::UInt64(timestamp);
 
         paramsJson["symbol"] = order.symbol;

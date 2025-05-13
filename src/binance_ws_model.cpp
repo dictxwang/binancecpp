@@ -233,8 +233,12 @@ namespace binance {
             event.originalOrderType = order["ot"].asString();
             event.positionSide = order["ps"].asString();
             event.isClosingPosition = order["cp"].asBool();
-            event.activationPrice = str_to_dobule(order["AP"]);
-            event.callbackRate = str_to_dobule(order["cr"]);
+            if (order.isMember("AP")) {
+                event.activationPrice = str_to_dobule(order["AP"]);
+            }
+            if (order.isMember("cr")) {
+                event.callbackRate = str_to_dobule(order["cr"]);
+            }
             event.priceProtect = order["pP"].asBool();
             event.realizedPnL = str_to_dobule(order["rp"]);
             event.stp = order["V"].asString();

@@ -30,6 +30,11 @@ namespace binance {
         if (secretKey != "") {
             this->parsedSecretKey = parse_private_key(secretKey);
         }
+
+        this->isConnected = false;
+        this->isLogoned = false;
+
+        this->lock = std::unique_lock<std::mutex>(this->mutex, std::defer_lock);
     }
 
     bool BinanceWsClient::connect_endpoint(std::string& handshakePath) {
@@ -55,6 +60,7 @@ namespace binance {
             throw e;
         }
 
+        this->isConnected = true;
         return true;
     }
 
@@ -129,9 +135,11 @@ namespace binance {
 
             if (status == 200 && respID == logonID) {
                 this->sessionID = logonID;
+                this->isLogoned = true;
                 return true;
             } else {
                 this->sessionID = "";
+                this->isLogoned = false;
                 return false;
             }
         }
@@ -168,8 +176,9 @@ namespace binance {
     bool BinanceWsClient::start_event_loop(WS_CB customCallback) {
 
         this->customCallback = customCallback;
+        std::string error;
 
-        while(true) {
+        while(this->isConnected) {
             try {
                 int total_recv_len = 0;
                 int max_buffer_size = 1024;
@@ -186,7 +195,7 @@ namespace binance {
                         break;
                     }
                     pendding_len = SSL_pending(this->ssl);
-                } while (pendding_len > 0);
+                } while (this->isConnected && pendding_len > 0);
 
                 if (read_len < 0) {
                     int err = SSL_get_error(this->ssl, read_len);
@@ -198,12 +207,14 @@ namespace binance {
                         // No data available, continue reading
                         continue;
                     } else {
+                        error = "error occur while read ssl";
                         break;
                     }
                 }
 
                 if (total_recv_len <= 0) {
-                    return false;
+                    error = "no data read from ssl connection";
+                    break;
                 }
 
                 if (this->recvBuffer.length() > recv_start_len && this->recvBuffer.length() > this->recvBuffer.getoft() + WEBSOCKET_HEADER_MIN_SIZE) {
@@ -238,15 +249,19 @@ namespace binance {
                     continue;
                 }
             } catch ( exception &e ) {
-                // TODO print exception
                 // std::cout << "Read exception: " << e.what() << std::endl;
+                error = e.what();
                 break;
             }
         }
 
         this->release_resource();
 
-        return false;
+        if (error.size() > 0) {
+            throw std::runtime_error("event loop error: " + error);
+        } else {
+            return false;
+        }
     }
 
     bool BinanceWsClient::process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer) {
@@ -262,9 +277,19 @@ namespace binance {
             packet.set_mask(1);
             ByteBuffer pong_buf;
             packet.pack_dataframe(pong_buf);
-            int writeLength = SSL_write(ssl, pong_buf.bytes(), pong_buf.length());
+            int writeLength;
+            string writeError;
+
+            // lock before write data
+            this->lock.lock();
+            try {
+                writeLength = SSL_write(ssl, pong_buf.bytes(), pong_buf.length());
+            } catch (std::exception &e) {
+                writeError = e.what();
+            }
+            this->lock.unlock();
             if (writeLength <= 0) {
-                throw std::runtime_error("failed to write pong package");
+                throw std::runtime_error("failed to write pong package: " + writeError);
             }
         } else if (packet.get_opcode() == WebSocketPacket::WSOpcode_Continue) {
             // Handle continuation frame
@@ -286,6 +311,9 @@ namespace binance {
     }
 
     void BinanceWsClient::release_resource() {
+
+        this->lock.lock();
+        
         this->recvBuffer.clear();
         this->msgBuffer.clear();
         if (this->ssl != nullptr) {
@@ -298,6 +326,9 @@ namespace binance {
                 close(this->socketFd);
             } catch (std::exception &e) {}
         }
-        delete(this->parsedSecretKey);
+        this->isConnected = false;
+        this->isLogoned = false;
+
+        this->lock.unlock();
     }
 }

@@ -2,6 +2,7 @@
 #define _BINANCE_WS_H_
 
 #include <string>
+#include <mutex>
 #include "binance.h"
 #include "util/common_tool.h"
 #include "websocket/ws_connection.h"
@@ -108,6 +109,7 @@ namespace binance {
         // Destructor
         virtual ~BinanceWsClient() {
             release_resource();
+            delete(this->parsedSecretKey);
         }
 
         // Public methods
@@ -127,10 +129,16 @@ namespace binance {
         int socketFd;
         SSL* ssl;
 
+        std::mutex mutex;
+        std::unique_lock<std::mutex> lock;
+
         ByteBuffer recvBuffer;
         ByteBuffer msgBuffer;
         WS_CB customCallback;
         std::string sessionID;
+
+        bool isConnected;
+        bool isLogoned;
 
     public:
         // Public methods

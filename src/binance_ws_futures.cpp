@@ -8,6 +8,8 @@ namespace binance {
 
     bool BinanceFuturesWsClient::startBookTickerV1(WS_CB customCallback, std::vector<std::string>& symbols) {
         
+        this->release_resource();
+
         if (symbols.size() == 0) {
             return false;
         }
@@ -36,6 +38,9 @@ namespace binance {
     }
 
     bool BinanceFuturesWsClient::startAllBookTickersV1(WS_CB customCallback) {
+                
+        this->release_resource();
+
         std::string endpoint = this->wsEndpoint.third;
         
         if (!this->useCombine && !this->useTrading) {
@@ -58,6 +63,9 @@ namespace binance {
     }
 
     bool BinanceFuturesWsClient::startMarkPriceV1(WS_CB customCallback, std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval) {
+                
+        this->release_resource();
+
         if (symbols.size() == 0) {
             return false;
         }
@@ -89,6 +97,9 @@ namespace binance {
     }
 
     bool BinanceFuturesWsClient::startAllMarkPricesV1(WS_CB customCallback, binance::WsMarkPriceInterval interval) {
+                
+        this->release_resource();
+
         std::string endpoint = this->wsEndpoint.third;
 
         if (!this->useCombine && !this->useTrading) {
@@ -114,6 +125,8 @@ namespace binance {
     }
 
     bool BinanceFuturesWsClient::startUserDataStreamV1(WS_CB customCallback, std::string listenKey) {
+        
+        this->release_resource();
 
         if (listenKey.size() == 0) {
             return false;
@@ -136,6 +149,8 @@ namespace binance {
     }
 
     bool BinanceFuturesWsClient::startUserDataStream(WS_CB customCallback) {
+        
+        this->release_resource();
 
         std::string endpoint = this->wsEndpoint.third;
         bool result = this->connect_endpoint(endpoint);
@@ -164,5 +179,42 @@ namespace binance {
         }
 
         return this->start_event_loop(customCallback);
+    }
+
+    void BinanceFuturesWsClient::initOrderService(std::string apiKey, std::string secretKey, bool useInternal) {
+        BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, true);
+    }
+
+    bool BinanceFuturesWsClient::startOrderService(WS_CB customCallback) {
+
+        release_resource();
+
+        std::string endpoint = this->wsEndpoint.third;
+        bool result = this->connect_endpoint(endpoint);
+        if (!result) {
+            return result;
+        }
+
+        // session logon
+        result = this->send_session_logon();
+        if (!result) {
+            return result;
+        }
+        return this->start_event_loop(customCallback);
+    }
+
+    bool BinanceFuturesWsClient::placeOrder(binance::FuturesNewOrder &order) {
+        
+        // TODO  use lock
+        this->lock.lock();
+        this->lock.unlock();
+
+    }
+
+    bool BinanceFuturesWsClient::cancelOrder(binance::FuturesCancelOrder &order) {
+
+        // TODO  use lock
+        this->lock.lock();
+        this->lock.unlock();
     }
 }

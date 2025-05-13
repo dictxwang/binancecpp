@@ -8,6 +8,9 @@ namespace binance {
     }
 
     bool BinanceSpotWsClient::startBookTicker(WS_CB customCallback, std::vector<std::string>& symbols) {
+        
+        // release the connection if existed, aviod exception by multi call
+        this->release_resource();
 
         if (symbols.size() == 0) {
             return false;
@@ -51,6 +54,8 @@ namespace binance {
     }
 
     bool BinanceSpotWsClient::startUserDataStreamV1(WS_CB customCallback , std::string listenKey) {
+        
+        this->release_resource();
 
         if (listenKey.size() == 0) {
             return false;
@@ -68,6 +73,8 @@ namespace binance {
     }
 
     bool BinanceSpotWsClient::startUserDataStream(WS_CB customCallback) {
+        
+        this->release_resource();
 
         std::string endpoint = this->wsEndpoint.third;
         bool result = this->connect_endpoint(endpoint);

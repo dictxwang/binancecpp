@@ -25,5 +25,10 @@ namespace binance {
         // TODO: unavailable
         void initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal);
         bool startUserDataStream(WS_CB customCallback);
+
+        void initOrderService(std::string apiKey, std::string secretKey, bool useInternal);
+        bool startOrderService(WS_CB customCallback);
+        bool placeOrder(binance::FuturesNewOrder &order);
+        bool cancelOrder(binance::FuturesCancelOrder &order);
     };
 }

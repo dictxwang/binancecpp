@@ -204,17 +204,121 @@ namespace binance {
     }
 
     bool BinanceFuturesWsClient::placeOrder(binance::FuturesNewOrder &order) {
-        
-        // TODO  use lock
+
+        if (!this->isConnected || !this->isLogoned) {
+            return false;
+        }
+
+        uint64_t timestamp = get_current_ms_epoch();
+        std::string reqId = generate_uuid();
+
+        Json::Value paramsJson;
+        paramsJson["apiKey"] = this->apiKey;
+        paramsJson["timestamp"] = Json::UInt64(timestamp);
+
+        paramsJson["symbol"] = order.symbol;
+        paramsJson["side"] = order.side;
+        paramsJson["positionSide"] = order.positionSide;
+        paramsJson["type"] = order.type;
+        paramsJson["quantity"] = order.quantity;
+        if (order.price != 0) {
+            paramsJson["price"] = order.price;
+        }
+        if (order.reduceOnly == "true" || order.reduceOnly == "false") {
+            paramsJson["reduceOnly"] = order.reduceOnly;
+        }
+        if (order.newClientOrderId.size() > 0) {
+            paramsJson["newClientOrderId"] = order.newClientOrderId;
+        }
+        if (order.newOrderRespType.size() > 0) {
+            paramsJson["newOrderRespType"] = order.newOrderRespType;
+        }
+
+        Json::Value reqJson;
+        reqJson["id"] = reqId;
+        reqJson["method"] = "order.place";
+        reqJson["params"] = paramsJson;
+        std::string payload = serialize_json_value(reqJson);
+
+        std::cout << "place order payload: " << payload << std::endl;
+
+        WebSocketPacket packet;
+        packet.set_fin(1);
+        packet.set_opcode(WebSocketPacket::WSOpcode_Text);
+        packet.set_mask(1);
+        ByteBuffer messageBuffer;
+        packet.set_payload(payload.c_str(), payload.length());
+        packet.pack_dataframe(messageBuffer);
+
+        int writeLength = 0;
+        string writeError;
+
         this->lock.lock();
+        try {
+            int writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
+        } catch (std::exception &e) {
+            writeError = e.what();
+        }
         this->lock.unlock();
 
+        if (writeLength <= 0) {
+            throw std::runtime_error("failed to send place order frame: " + writeError);
+        }
+
+        return true;
     }
 
     bool BinanceFuturesWsClient::cancelOrder(binance::FuturesCancelOrder &order) {
 
-        // TODO  use lock
+        if (!this->isConnected || !this->isLogoned) {
+            return false;
+        }
+        
+        uint64_t timestamp = get_current_ms_epoch();
+        std::string reqId = generate_uuid();
+
+        Json::Value paramsJson;
+        paramsJson["apiKey"] = this->apiKey;
+        paramsJson["timestamp"] = Json::UInt64(timestamp);
+
+        paramsJson["symbol"] = order.symbol;
+        if (order.origClientOrderId.size() > 0) {
+            paramsJson["origClientOrderId"] = order.origClientOrderId;
+        } else {
+            paramsJson["orderId"] = Json::UInt64(order.orderId);
+        }
+
+        Json::Value reqJson;
+        reqJson["id"] = reqId;
+        reqJson["method"] = "order.cancel";
+        reqJson["params"] = paramsJson;
+        std::string payload = serialize_json_value(reqJson);
+
+        std::cout << "cancel order payload: " << payload << std::endl;
+
+        WebSocketPacket packet;
+        packet.set_fin(1);
+        packet.set_opcode(WebSocketPacket::WSOpcode_Text);
+        packet.set_mask(1);
+        ByteBuffer messageBuffer;
+        packet.set_payload(payload.c_str(), payload.length());
+        packet.pack_dataframe(messageBuffer);
+
+        int writeLength = 0;
+        string writeError;
+
         this->lock.lock();
+        try {
+            int writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
+        } catch (std::exception &e) {
+            writeError = e.what();
+        }
         this->lock.unlock();
+        
+        if (writeLength <= 0) {
+            throw std::runtime_error("failed to send cancel order frame: " + writeError);
+        }
+
+        return true;
     }
 }

@@ -14,7 +14,7 @@ namespace binance {
         string timeInForce;
         double quantity;
         double price;
-        bool reduceOnly;
+        string reduceOnly;
         string newClientOrderId;
         string newOrderRespType;
         uint64_t createTime;

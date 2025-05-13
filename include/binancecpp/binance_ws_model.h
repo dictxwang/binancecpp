@@ -158,7 +158,6 @@ namespace binance {
         double latestPrice; // "L" price for the latest trade
         string feeAsset; // "N"
         double feeCost; // "n"
-        uint64_t transactionTime; // "T"
         uint64_t tradeId; // "t"
         double bidNotional; // "b"
         double askNotional; // "a"

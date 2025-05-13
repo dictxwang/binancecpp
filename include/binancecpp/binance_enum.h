@@ -31,6 +31,9 @@ namespace binance {
 
     const int Isolated_Position_Type_Add = 1;
     const int Isolated_Position_Type_Reduce = 2;
+
+    const string FuturesUserDataAccountUpdate = "ACCOUNT_UPDATE";
+    const string FuturesUserDataOrderTradeUpdate = "ORDER_TRADE_UPDATE";
 }
 
 #endif

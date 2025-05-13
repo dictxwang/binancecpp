@@ -95,7 +95,7 @@ namespace binance {
         }
         event.feeCost = str_to_dobule(json_value["n"]);
         event.transactionTime = json_value["T"].asUInt64();
-        event.tradeId = json_value["t"].asInt64();
+        event.tradeId = json_value["t"].asUInt64();
         event.isInOrderBook = json_value["w"].asBool();
         event.isMaker = json_value["m"].asBool();
         event.createTime = json_value["O"].asUInt64();
@@ -159,6 +159,49 @@ namespace binance {
         if (json_value.isMember("T")) {
             event.nextFundingTime = json_value["T"].asUInt64();
         }
+        return event;
+    }
+
+    WsFuturesAccountUpdateEvent convertJsonToWsFuturesAccountUpdateEvent(Json::Value &json_value) {
+        WsFuturesAccountUpdateEvent event;
+        event.eventType = json_value["e"].asString();
+        event.eventTIme = json_value["E"].asUInt64();
+        event.transactionTime = json_value["T"].asUInt64();
+        if (json_value.isMember("a")) {
+            event.eventReasonType = json_value["a"]["m"].asString();
+            if (json_value["a"].isMember("B")) {
+                Json::Value balances = json_value["a"]["B"];
+                for (int i = 0; i < balances.size(); i++) {
+                    WsFuturesAccountUpdateBalanceEvent be;
+                    be.asset = balances[i]["a"].asString();
+                    be.walletBalance = str_to_dobule(balances[i]["wb"]);
+                    be.crossWalletBalance = str_to_dobule(balances[i]["cw"]);
+                    be.balanceChange = str_to_dobule(balances[i]["bc"]);
+                    event.balances.push_back(be);
+                }
+            }
+            if (json_value["a"].isMember("P")) {
+                Json::Value positions = json_value["a"]["P"];
+                for (int i = 0; i < positions.size(); i++) {
+                    WsFuturesAccountUpdatePositionEvent pe;
+                    pe.symbol = positions[i]["s"].asString();
+                    pe.postionAmout = str_to_dobule(positions[i]["pa"]);
+                    pe.entryPrice = str_to_dobule(positions[i]["ep"]);
+                    pe.breakevenPrice = str_to_dobule(positions[i]["bep"]);
+                    pe.accumulatedRealized = str_to_dobule(positions[i]["cr"]);
+                    pe.unrealizedPnL = str_to_dobule(positions[i]["up"]);
+                    pe.marginType = positions[i]["mt"].asString();
+                    pe.isolatedWallet = str_to_dobule(positions[i]["iw"]);
+                    pe.positionSide = positions[i]["ps"].asString();
+                    event.positions.push_back(pe);
+                }
+            }
+        }
+        return event;
+    }
+    WsFuturesOrderTradeUpdateEvent convertJsonToWsFuturesOrderTradeUpdateEvent(Json::Value &json_value) {
+        WsFuturesOrderTradeUpdateEvent event;
+        // TODO
         return event;
     }
 }

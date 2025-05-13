@@ -200,6 +200,7 @@ namespace binance {
         if (!result) {
             return result;
         }
+
         return this->start_event_loop(customCallback);
     }
 
@@ -255,7 +256,7 @@ namespace binance {
 
         this->lock.lock();
         try {
-            int writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
+            writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
         } catch (std::exception &e) {
             writeError = e.what();
         }
@@ -309,7 +310,7 @@ namespace binance {
 
         this->lock.lock();
         try {
-            int writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
+            writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
         } catch (std::exception &e) {
             writeError = e.what();
         }

@@ -104,7 +104,9 @@ namespace binance {
     class BinanceWsClient {
     public:
         // Constructor
-        BinanceWsClient() {}
+        BinanceWsClient() {
+            this->ssl = nullptr;
+        }
 
         // Destructor
         virtual ~BinanceWsClient() {

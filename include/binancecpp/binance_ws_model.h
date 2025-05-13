@@ -171,9 +171,9 @@ namespace binance {
         double callbackRate; // "cr"`  // Callback Rate, only puhed with TRAILING_STOP_MARKET order
 	    bool priceProtect; // "pP"`  // If price protection is turned on
         double realizedPnL; // "rp"`  // Realized Profit of the trade
-	    string sTP; // "V"`   // STP mode
+	    string stp; // "V"`   // STP mode
 	    string priceMode; // "pm"`  // Price match mode
-	    uint64_t gTD; // "gtd"` // TIF GTD order auto cancel time
+	    uint64_t gtd; // "gtd"` // TIF GTD order auto cancel time
     };
     
     WsFuturesMarkPriceEvent convertJsonToWsFuturesMarkPriceEvent(Json::Value &json_value);

@@ -201,7 +201,46 @@ namespace binance {
     }
     WsFuturesOrderTradeUpdateEvent convertJsonToWsFuturesOrderTradeUpdateEvent(Json::Value &json_value) {
         WsFuturesOrderTradeUpdateEvent event;
-        // TODO
+        event.eventType = json_value["e"].asString();
+        event.eventTIme = json_value["E"].asUInt64();
+        event.transactionTime = json_value["T"].asUInt64();
+
+        if (json_value.isMember("o")) {
+            Json::Value order = json_value["o"];
+            event.symbol = order["s"].asString();
+            event.clientOrderId = order["c"].asString();
+            event.side = order["S"].asString();
+            event.type = order["o"].asString();
+            event.timeInForce = order["f"].asString();
+            event.volume = str_to_dobule(order["q"]);
+            event.price = str_to_dobule(order["p"]);
+            event.averagePrice = str_to_dobule(order["ap"]);
+            event.stopPrice = str_to_dobule(order["sp"]);
+            event.executionType = order["x"].asString();
+            event.orderStatus = order["X"].asString();
+            event.id = order["i"].asUInt64();
+            event.latestVolume = str_to_dobule(order["l"]);
+            event.filledVolume = str_to_dobule(order["z"]);
+            event.latestPrice = str_to_dobule(order["L"]);
+            event.feeAsset = order["N"].asString();
+            event.feeCost = str_to_dobule(order["n"]);
+            event.tradeId = order["t"].asUInt64();
+            event.bidNotional = str_to_dobule(order["b"]);
+            event.askNotional = str_to_dobule(order["a"]);
+            event.isMaker = order["m"].asBool();
+            event.isReduce = order["R"].asBool();
+            event.workingType = order["wt"].asString();
+            event.originalOrderType = order["ot"].asString();
+            event.positionSide = order["ps"].asString();
+            event.isClosingPosition = order["cp"].asBool();
+            event.activationPrice = str_to_dobule(order["AP"]);
+            event.callbackRate = str_to_dobule(order["cr"]);
+            event.priceProtect = order["pP"].asBool();
+            event.realizedPnL = str_to_dobule(order["rp"]);
+            event.stp = order["V"].asString();
+            event.priceMode = order["pm"].asString();
+            event.gtd = str_to_dobule(order["gtd"]);
+        }
         return event;
     }
 }

@@ -24,7 +24,7 @@ namespace binance {
     }
 
     //---------------------------------
-    static time_t get_current_epoch( ) {
+    static uint64_t get_current_epoch( ) {
 
         struct timeval tv;
         gettimeofday(&tv, NULL); 

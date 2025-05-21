@@ -8,6 +8,12 @@ namespace binance {
     void BinanceWsClient::setRemoteIP(const std::string& remoteIP) {
         this->remoteIP = remoteIP;
     }
+    void BinanceWsClient::setMessageChannel(moodycamel::ConcurrentQueue<std::string> *messageChannel) {
+        this->messageChannel = messageChannel;
+    }
+    void BinanceWsClient::setMessageCallback(WS_CB customCallback) {
+        this->customCallback = customCallback;
+    }
     void BinanceWsClient::init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal, bool useCombine, bool isTrading) {
         this->apiKey = apiKey;
         this->secretKey = secretKey;
@@ -173,9 +179,8 @@ namespace binance {
         }
     }
 
-    bool BinanceWsClient::start_event_loop(WS_CB customCallback) {
+    bool BinanceWsClient::start_event_loop() {
 
-        this->customCallback = customCallback;
         std::string error;
 
         while(this->isConnected) {
@@ -303,8 +308,23 @@ namespace binance {
 
             // Cumstomer could choose Json library
             std::string messageJson = std::string(mssageBuffer.bytes(), mssageBuffer.length()).c_str() ;
-            // Process json result by custom
-            return this->customCallback(messageJson);
+            
+            if (this->messageChannel == nullptr && this->customCallback == nullptr) {
+                std::cout << "require message-channel or custom callback for consume: " << messageJson << std::endl;
+            } else {
+                // Send json to channel
+                if (this->messageChannel != nullptr) {
+                    bool result = (*this->messageChannel).try_enqueue(messageJson);
+                    if (!result) {
+                        std::cout << "can not enqueue item: " << messageJson << std::endl;
+                    }
+                }
+
+                // Process json result by custom
+                if (this->customCallback != nullptr) {
+                    (*this->customCallback)(messageJson);
+                }
+            }
         }
 
         return true;

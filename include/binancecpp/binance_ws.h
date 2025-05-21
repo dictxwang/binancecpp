@@ -7,6 +7,7 @@
 #include "util/common_tool.h"
 #include "websocket/ws_connection.h"
 #include "websocket/ws_packet.h"
+#include "moodycamel/concurrentqueue.h"
 
 using namespace std;
 
@@ -111,7 +112,12 @@ namespace binance {
         // Destructor
         virtual ~BinanceWsClient() {
             release_resource();
-            delete(this->parsedSecretKey);
+            if (this->parsedSecretKey != nullptr) {
+                delete(this->parsedSecretKey);
+            }
+            if (this->messageChannel != nullptr) {
+                delete(this->messageChannel);
+            }
         }
 
         // Public methods
@@ -137,6 +143,7 @@ namespace binance {
         ByteBuffer recvBuffer;
         ByteBuffer msgBuffer;
         WS_CB customCallback;
+        moodycamel::ConcurrentQueue<std::string> *messageChannel;
         std::string sessionID;
 
         bool isConnected;
@@ -146,6 +153,8 @@ namespace binance {
         // Public methods
         void setLocalIP(const std::string& localIP); // call before init
         void setRemoteIP(const std::string& remoteIP); // call before init
+        void setMessageChannel(moodycamel::ConcurrentQueue<std::string> *messageChannel);
+        void setMessageCallback(WS_CB customCallback);
 
     protected:
         // Protected methods
@@ -154,7 +163,7 @@ namespace binance {
         bool connect_endpoint(std::string& handshakePath);
         bool send_session_logon();
         bool send_subscribe(std::string& payload);
-		bool start_event_loop(WS_CB customCallback);
+		bool start_event_loop();
         bool process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer);
         void release_resource();
     };

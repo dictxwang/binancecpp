@@ -6,7 +6,7 @@ namespace binance {
         BinanceWsClient::init("","", MarketType::FUTURES, useInternal, useCombine, false);
     }
 
-    bool BinanceFuturesWsClient::startBookTickerV1(WS_CB customCallback, std::vector<std::string>& symbols) {
+    bool BinanceFuturesWsClient::startBookTickerV1(std::vector<std::string>& symbols) {
         
         this->release_resource();
 
@@ -34,10 +34,10 @@ namespace binance {
 
         // Not require logon and subscribe
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
-    bool BinanceFuturesWsClient::startAllBookTickersV1(WS_CB customCallback) {
+    bool BinanceFuturesWsClient::startAllBookTickersV1() {
                 
         this->release_resource();
 
@@ -55,14 +55,14 @@ namespace binance {
 
         // Not require logon and subscribe
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
     void BinanceFuturesWsClient::initMarkPriceV1(bool useInternal, bool useCombine) {
         BinanceWsClient::init("","", MarketType::FUTURES, useInternal, useCombine, false);
     }
 
-    bool BinanceFuturesWsClient::startMarkPriceV1(WS_CB customCallback, std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval) {
+    bool BinanceFuturesWsClient::startMarkPriceV1(std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval) {
                 
         this->release_resource();
 
@@ -93,10 +93,10 @@ namespace binance {
 
         // Not require logon and subscribe
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
-    bool BinanceFuturesWsClient::startAllMarkPricesV1(WS_CB customCallback, binance::WsMarkPriceInterval interval) {
+    bool BinanceFuturesWsClient::startAllMarkPricesV1(binance::WsMarkPriceInterval interval) {
                 
         this->release_resource();
 
@@ -117,14 +117,14 @@ namespace binance {
 
         // Not require logon and subscribe
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
     void BinanceFuturesWsClient::initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal) {
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, false);
     }
 
-    bool BinanceFuturesWsClient::startUserDataStreamV1(WS_CB customCallback, std::string listenKey) {
+    bool BinanceFuturesWsClient::startUserDataStreamV1(std::string listenKey) {
         
         this->release_resource();
 
@@ -140,7 +140,7 @@ namespace binance {
 
         // Not require logon and subscribe
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
     void BinanceFuturesWsClient::initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal) {
@@ -148,7 +148,7 @@ namespace binance {
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, true);
     }
 
-    bool BinanceFuturesWsClient::startUserDataStream(WS_CB customCallback) {
+    bool BinanceFuturesWsClient::startUserDataStream() {
         
         this->release_resource();
 
@@ -178,14 +178,14 @@ namespace binance {
             return result;
         }
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
     void BinanceFuturesWsClient::initOrderService(std::string apiKey, std::string secretKey, bool useInternal) {
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, true);
     }
 
-    bool BinanceFuturesWsClient::startOrderService(WS_CB customCallback) {
+    bool BinanceFuturesWsClient::startOrderService() {
 
         release_resource();
 
@@ -201,7 +201,7 @@ namespace binance {
             return result;
         }
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
     bool BinanceFuturesWsClient::placeOrder(binance::FuturesNewOrder &order) {

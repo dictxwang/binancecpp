@@ -7,7 +7,7 @@ namespace binance {
         BinanceWsClient::init("","", MarketType::SPOT, useInternal, useCombine, false);
     }
 
-    bool BinanceSpotWsClient::startBookTicker(WS_CB customCallback, std::vector<std::string>& symbols) {
+    bool BinanceSpotWsClient::startBookTicker(std::vector<std::string>& symbols) {
         
         // release the connection if existed, aviod exception by multi call
         this->release_resource();
@@ -40,7 +40,7 @@ namespace binance {
             return result;
         }
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
     void BinanceSpotWsClient::initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal) {
@@ -53,7 +53,7 @@ namespace binance {
         BinanceWsClient::init(apiKey, secretKey, MarketType::SPOT, useInternal, false, false);
     }
 
-    bool BinanceSpotWsClient::startUserDataStreamV1(WS_CB customCallback , std::string listenKey) {
+    bool BinanceSpotWsClient::startUserDataStreamV1(std::string listenKey) {
         
         this->release_resource();
 
@@ -69,10 +69,10 @@ namespace binance {
 
         // Not require logon and subscribe
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 
-    bool BinanceSpotWsClient::startUserDataStream(WS_CB customCallback) {
+    bool BinanceSpotWsClient::startUserDataStream() {
         
         this->release_resource();
 
@@ -99,6 +99,6 @@ namespace binance {
             return result;
         }
 
-        return this->start_event_loop(customCallback);
+        return this->start_event_loop();
     }
 }

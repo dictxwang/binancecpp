@@ -46,11 +46,83 @@ SSL* create_tls_connection(int& socket_fd, const std::string& host, int port, st
             throw std::runtime_error("fail to bind local ip");
         }
     }
-
-    // Step 5: Connect to the server
-    if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+    
+    // Step 5: Connect to the server with timeout
+    // Set the socket to non-blocking mode
+    int origin_flags = fcntl(socket_fd, F_GETFL, 0);
+    if (origin_flags < 0) {
         close(socket_fd);
-        throw std::runtime_error("failed to connect to server");
+        throw std::runtime_error("fail to get socket flag");
+    }
+
+    if (fcntl(socket_fd, F_SETFL, origin_flags | O_NONBLOCK) < 0) {
+        throw std::runtime_error("fail to set socket to non-blocking mode");
+    }
+
+    int connect_result = connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
+    if (connect_result == 0) {
+        // Connection succeeded immediately
+        // Restore socket flags
+        fcntl(socket_fd, F_SETFL, origin_flags);
+    } else {
+        if (errno != EINPROGRESS) {
+            // Connection attempt failed immediately
+            throw std::runtime_error("connect fail: " + std::string(strerror(errno)));
+        }
+
+        // Use select() to wait for the socket to become writable
+        fd_set writefds;
+        FD_ZERO(&writefds);
+        FD_SET(socket_fd, &writefds);
+        struct timeval connect_timeout;
+        connect_timeout.tv_sec = 3;
+        connect_timeout.tv_usec = 0;
+
+        connect_result = select(socket_fd + 1, nullptr, &writefds, nullptr, &connect_timeout);
+        if (connect_result <= 0) {
+            // Timeout or error
+            if (connect_result == 0) {
+                throw std::runtime_error("connect time out");
+            } else {
+                throw std::runtime_error("select error: " + std::string(strerror(errno)));
+            }
+        }
+
+        // Check for errors on the socket
+        int sock_error;
+        socklen_t len = sizeof(sock_error);
+        if (getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &sock_error, &len) < 0) {
+            throw std::runtime_error("get sockopt failed: " + std::string(strerror(errno)));
+        }
+
+        if (sock_error != 0) {
+            throw std::runtime_error("connect failed: " + std::string(strerror(errno)));
+        }
+
+        // Connection was successful
+        fcntl(socket_fd, F_SETFL, origin_flags); // Restore socket flags
+    }
+
+    // // Step 5: Connect to the server
+    // if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+    //     close(socket_fd);
+    //     throw std::runtime_error("failed to connect to server");
+    // }
+
+    // Set a timeout for receiving data
+    struct timeval timeout;
+    timeout.tv_sec = 5;  // 5 seconds
+    timeout.tv_usec = 0; // 0 microseconds
+
+    if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+        close(socket_fd);
+        throw std::runtime_error("failed to set read timeout");
+    }
+
+    // Set a timeout for sending data (optional)
+    if (setsockopt(socket_fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) < 0) {
+        close(socket_fd);
+        throw std::runtime_error("failed to set write timeout");
     }
 
     // Step 6: Create an SSL object and attach it to the socket

@@ -6,12 +6,10 @@ namespace binance {
         BinanceWsClient::init("","", MarketType::FUTURES, useInternal, useCombine, false);
     }
 
-    bool BinanceFuturesWsClient::startBookTickerV1(std::vector<std::string>& symbols) {
-        
-        this->release_resource();
+    std::pair<bool, string> BinanceFuturesWsClient::startBookTickerV1(std::vector<std::string>& symbols) {
 
         if (symbols.size() == 0) {
-            return false;
+            return std::pair<bool, string>(false, "subscribe symbols is empty");
         }
 
         std::string listenPath;
@@ -27,19 +25,19 @@ namespace binance {
         }
         endpoint.append(listenPath);
 
-        bool result = this->connect_endpoint(endpoint);
-        if (!result) {
+        std::pair<bool, string> result = this->connect_endpoint(endpoint);
+        if (!result.first) {
             return result;
-        }
+        }    
 
         // Not require logon and subscribe
 
         return this->start_event_loop();
     }
 
-    bool BinanceFuturesWsClient::startAllBookTickersV1() {
+    std::pair<bool, string> BinanceFuturesWsClient::startAllBookTickersV1() {
                 
-        this->release_resource();
+        // this->release_resource();
 
         std::string endpoint = this->wsEndpoint.third;
         
@@ -48,8 +46,8 @@ namespace binance {
         }
         endpoint.append("!bookTicker");
         
-        bool result = this->connect_endpoint(endpoint);
-        if (!result) {
+        std::pair<bool, string> result = this->connect_endpoint(endpoint);
+        if (!result.first) {
             return result;
         }
 
@@ -62,12 +60,12 @@ namespace binance {
         BinanceWsClient::init("","", MarketType::FUTURES, useInternal, useCombine, false);
     }
 
-    bool BinanceFuturesWsClient::startMarkPriceV1(std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval) {
+    std::pair<bool, string> BinanceFuturesWsClient::startMarkPriceV1(std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval) {
                 
-        this->release_resource();
+        // this->release_resource();
 
         if (symbols.size() == 0) {
-            return false;
+            return std::pair<bool, string>(false, "subscribe symbols is empty");
         }
 
         std::string listenPath;
@@ -86,8 +84,8 @@ namespace binance {
         }
         endpoint.append(listenPath);
 
-        bool result = this->connect_endpoint(endpoint);
-        if (!result) {
+        std::pair<bool, string> result = this->connect_endpoint(endpoint);
+        if (!result.first) {
             return result;
         }
 
@@ -96,9 +94,9 @@ namespace binance {
         return this->start_event_loop();
     }
 
-    bool BinanceFuturesWsClient::startAllMarkPricesV1(binance::WsMarkPriceInterval interval) {
+    std::pair<bool, string> BinanceFuturesWsClient::startAllMarkPricesV1(binance::WsMarkPriceInterval interval) {
                 
-        this->release_resource();
+        // this->release_resource();
 
         std::string endpoint = this->wsEndpoint.third;
 
@@ -110,8 +108,8 @@ namespace binance {
             endpoint.append("@1s");
         }
         
-        bool result = this->connect_endpoint(endpoint);
-        if (!result) {
+        std::pair<bool, string> result = this->connect_endpoint(endpoint);
+        if (!result.first) {
             return result;
         }
 
@@ -124,17 +122,17 @@ namespace binance {
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, false);
     }
 
-    bool BinanceFuturesWsClient::startUserDataStreamV1(std::string listenKey) {
+    std::pair<bool, string> BinanceFuturesWsClient::startUserDataStreamV1(std::string listenKey) {
         
-        this->release_resource();
+        // this->release_resource();
 
         if (listenKey.size() == 0) {
-            return false;
+            return std::pair<bool, string>(false, "require listenKey");
         }
 
         std::string endpoint = this->wsEndpoint.third + "/" + listenKey;
-        bool result = this->connect_endpoint(endpoint);
-        if (!result) {
+        std::pair<bool, string> result = this->connect_endpoint(endpoint);
+        if (!result.first) {
             return result;
         }
 
@@ -148,19 +146,19 @@ namespace binance {
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, true);
     }
 
-    bool BinanceFuturesWsClient::startUserDataStream() {
+    std::pair<bool, string> BinanceFuturesWsClient::startUserDataStream() {
         
-        this->release_resource();
+        // this->release_resource();
 
         std::string endpoint = this->wsEndpoint.third;
-        bool result = this->connect_endpoint(endpoint);
-        if (!result) {
+        std::pair<bool, string> result = this->connect_endpoint(endpoint);
+        if (!result.first) {
             return result;
         }
 
         // session logon
         result = this->send_session_logon();
-        if (!result) {
+        if (!result.first) {
             return result;
         }
 
@@ -174,7 +172,7 @@ namespace binance {
         std::string subscribeMessage = serialize_json_value(reqJson);
 
         result = this->send_subscribe(subscribeMessage);
-        if (!result) {
+        if (!result.first) {
             return result;
         }
 
@@ -185,29 +183,29 @@ namespace binance {
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, true);
     }
 
-    bool BinanceFuturesWsClient::startOrderService() {
+    std::pair<bool, string> BinanceFuturesWsClient::startOrderService() {
 
-        release_resource();
+        // release_resource();
 
         std::string endpoint = this->wsEndpoint.third;
-        bool result = this->connect_endpoint(endpoint);
-        if (!result) {
+        std::pair<bool, string> result = this->connect_endpoint(endpoint);
+        if (!result.first) {
             return result;
         }
 
         // session logon
         result = this->send_session_logon();
-        if (!result) {
+        if (!result.first) {
             return result;
         }
 
         return this->start_event_loop();
     }
 
-    bool BinanceFuturesWsClient::placeOrder(binance::FuturesNewOrder &order) {
+    std::pair<bool, string> BinanceFuturesWsClient::placeOrder(binance::FuturesNewOrder &order) {
 
         if (!this->isConnected || !this->isLogoned) {
-            return false;
+            return std::pair<bool, string>(false, "connection closed or session expired");
         }
 
         uint64_t timestamp = get_current_ms_epoch();
@@ -243,7 +241,7 @@ namespace binance {
         reqJson["params"] = paramsJson;
         std::string payload = serialize_json_value(reqJson);
 
-        std::cout << "place order payload: " << payload << std::endl;
+        // std::cout << "place order payload: " << payload << std::endl;
 
         WebSocketPacket packet;
         packet.set_fin(1);
@@ -265,16 +263,16 @@ namespace binance {
         this->lock.unlock();
 
         if (writeLength <= 0) {
-            throw std::runtime_error("failed to send place order frame: " + writeError);
+            return std::pair<bool, string>(false, "failed to send place order frame: " + writeError);
         }
 
-        return true;
+        return std::pair<bool, string>(true, "");
     }
 
-    bool BinanceFuturesWsClient::cancelOrder(binance::FuturesCancelOrder &order) {
+    std::pair<bool, string> BinanceFuturesWsClient::cancelOrder(binance::FuturesCancelOrder &order) {
 
         if (!this->isConnected || !this->isLogoned) {
-            return false;
+            return std::pair<bool, string>(false, "connection closed or session expired");
         }
         
         uint64_t timestamp = get_current_ms_epoch();
@@ -320,9 +318,9 @@ namespace binance {
         this->lock.unlock();
         
         if (writeLength <= 0) {
-            throw std::runtime_error("failed to send cancel order frame: " + writeError);
+            return std::pair<bool, string>(false, "failed to send cancel order frame: " + writeError);
         }
 
-        return true;
+        return std::pair<bool, string>(true, "");
     }
 }

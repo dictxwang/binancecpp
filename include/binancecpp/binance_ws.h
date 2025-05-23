@@ -160,11 +160,11 @@ namespace binance {
         // Protected methods
         void init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal, bool useCombine, bool useTrading);
         // virtual std::string make_subscribe_frame(std::vector<std::string> &params);
-        bool connect_endpoint(std::string& handshakePath);
-        bool send_session_logon();
-        bool send_subscribe(std::string& payload);
-		bool start_event_loop();
-        bool process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer);
+        std::pair<bool, string> connect_endpoint(std::string& handshakePath);
+        std::pair<bool, string> send_session_logon();
+        std::pair<bool, string> send_subscribe(std::string& payload);
+		std::pair<bool, string> start_event_loop();
+        std::pair<bool, string> process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer);
         void release_resource();
     };
 }

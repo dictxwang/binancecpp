@@ -13,22 +13,22 @@ namespace binance {
         ~BinanceFuturesWsClient() {}
     
         void initBookTickerV1(bool useInternal, bool useCombine);
-        bool startBookTickerV1(std::vector<std::string>& symbols);
-        bool startAllBookTickersV1();
+        std::pair<bool, string> startBookTickerV1(std::vector<std::string>& symbols);
+        std::pair<bool, string> startAllBookTickersV1();
 
         void initMarkPriceV1(bool useInternal, bool useCombine);
-        bool startMarkPriceV1(std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval);
-        bool startAllMarkPricesV1(binance::WsMarkPriceInterval interval);
+        std::pair<bool, string> startMarkPriceV1(std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval);
+        std::pair<bool, string> startAllMarkPricesV1(binance::WsMarkPriceInterval interval);
 
         void initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal);
-        bool startUserDataStreamV1(std::string listenKey);
+        std::pair<bool, string> startUserDataStreamV1(std::string listenKey);
         // TODO: unavailable
         void initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal);
-        bool startUserDataStream();
+        std::pair<bool, string> startUserDataStream();
 
         void initOrderService(std::string apiKey, std::string secretKey, bool useInternal);
-        bool startOrderService();
-        bool placeOrder(binance::FuturesNewOrder &order);
-        bool cancelOrder(binance::FuturesCancelOrder &order);
+        std::pair<bool, string> startOrderService();
+        std::pair<bool, string> placeOrder(binance::FuturesNewOrder &order);
+        std::pair<bool, string> cancelOrder(binance::FuturesCancelOrder &order);
     };
 }

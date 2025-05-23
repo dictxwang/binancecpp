@@ -43,7 +43,7 @@ namespace binance {
         this->lock = std::unique_lock<std::mutex>(this->mutex, std::defer_lock);
     }
 
-    bool BinanceWsClient::connect_endpoint(std::string& handshakePath) {
+    std::pair<bool, string> BinanceWsClient::connect_endpoint(std::string& handshakePath) {
         // Implementation of connecting to the WebSocket endpoint
         // This is where you would set up the WebSocket connection and handle messages
 
@@ -53,7 +53,7 @@ namespace binance {
         try {
             ssl = create_tls_connection(socket_fd, this->wsEndpoint.first, this->wsEndpoint.second, this->remoteIP, this->localIP);
         } catch (std::exception &e) {
-            throw e;
+            return std::pair<bool, string> (false, "fail to create tls connection: " + std::string(e.what()));
         }
 
         this->socketFd = socket_fd;
@@ -63,14 +63,14 @@ namespace binance {
         try {
             perform_websocket_handshake(this->ssl, this->wsEndpoint.first, handshakePath);
         } catch (std::exception &e) {
-            throw e;
+            return std::pair<bool, string> (false, "fail to perform ws handshake: " + std::string(e.what()));
         }
 
         this->isConnected = true;
-        return true;
+        return std::pair<bool, string>(true, "");
     }
 
-    bool BinanceWsClient::send_session_logon() {
+    std::pair<bool, string> BinanceWsClient::send_session_logon() {
         
         // TODO If original sessionID is not empty, maybe need logout firstly
 
@@ -88,7 +88,7 @@ namespace binance {
             std::string signature = sign_payload_by_ed25519(this->parsedSecretKey, query);
             paramsJson["signature"] = signature;
         } catch (std::exception &e) {
-            throw std::runtime_error("fail to signature: " + std::string(e.what()));
+            return std::pair<bool, string> (false, "fail to logon signature: " + std::string(e.what()));
         }
 
         Json::Value reqJson;
@@ -108,7 +108,7 @@ namespace binance {
         packet.pack_dataframe(messageBuffer);
         int writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
         if (writeLength <= 0) {
-            throw std::runtime_error("failed to send logon frame");
+            return std::pair<bool, string> (false, "failed to send logon frame");
         }
 
         char buffer[1024];
@@ -119,7 +119,7 @@ namespace binance {
             len = SSL_read(this->ssl, buffer, sizeof(buffer) - 1);
         }
         if (len < 0) {
-            throw std::runtime_error("failed to receive logon response");
+            return std::pair<bool, string> (false, "failed to receive logon response");
         } else {
             // Remove start opcode
             std::memmove(buffer, buffer + 4, len - 4 + 1);
@@ -142,19 +142,19 @@ namespace binance {
             if (status == 200 && respID == logonID) {
                 this->sessionID = logonID;
                 this->isLogoned = true;
-                return true;
+                return std::pair<bool, string> (true, "");
             } else {
                 this->sessionID = "";
                 this->isLogoned = false;
-                return false;
+                return std::pair<bool, string> (false, std::string(buffer, len-4));
             }
         }
     }
 
-    bool BinanceWsClient::send_subscribe(std::string& payload) {
+    std::pair<bool, string> BinanceWsClient::send_subscribe(std::string& payload) {
 
         if (payload.length() == 0) {
-            throw std::runtime_error("subscribe payload is empty");
+            return std::pair<bool, string>(false, "subscribe payload is empty");
         }
 
         WebSocketPacket packet;
@@ -167,19 +167,19 @@ namespace binance {
         int writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
         // int writeLength = SSL_write(this->ssl, subscribeFrame.c_str(), subscribeFrame.size());
         if (writeLength <= 0) {
-            throw std::runtime_error("failed to send subscribe frame");
+            return std::pair<bool, string>(false, "failed to send subscribe frame");
         }
 
         char buffer[1024];
         int len = SSL_read(this->ssl, buffer, sizeof(buffer) - 1);
         if (len < 0) {
-            throw std::runtime_error("failed to receive subscribe response");
+            return std::pair<bool, string>(false, "failed to receive subscribe response");
         } else {
-            return true;
+            return std::pair<bool, string>(true, "");
         }
     }
 
-    bool BinanceWsClient::start_event_loop() {
+    std::pair<bool, string> BinanceWsClient::start_event_loop() {
 
         std::string error;
 
@@ -202,17 +202,27 @@ namespace binance {
                     pendding_len = SSL_pending(this->ssl);
                 } while (this->isConnected && pendding_len > 0);
 
-                if (read_len < 0) {
-                    int err = SSL_get_error(this->ssl, read_len);
+                if (read_len == 0) {
+                    error = "Connection closed by peer (gracefully)";
+                    break;
+                } else if (read_len < 0) {
+                    int error_code = SSL_get_error(this->ssl, read_len);
                     ERR_clear_error();
-                    if (err == SSL_ERROR_WANT_READ) {
-                        // No data available, continue reading
+                    if (error_code == SSL_ERROR_WANT_READ || error_code == SSL_ERROR_WANT_WRITE) {
+                        // break;
+                        // TODO may got this code while connection is closed
                         continue;
-                    } else if (err == SSL_ERROR_WANT_WRITE) {
-                        // No data available, continue reading
-                        continue;
+                    } else if (error_code == SSL_ERROR_ZERO_RETURN) {
+                        error = "Connection closed by peer (gracefully)";
+                        break;
+                    } else if (error_code == SSL_ERROR_SYSCALL) {
+                        error = "I/O error occurred: " + std::string(strerror(errno));
+                        break;
+                    } else if (error_code == SSL_ERROR_SSL) {
+                        error = "SSL protocol error: " + std::string(ERR_reason_error_string(ERR_get_error()));
+                        break;
                     } else {
-                        error = "error occur while read ssl";
+                        error = "Unknown error occurred in SSL_read.";
                         break;
                     }
                 }
@@ -255,27 +265,23 @@ namespace binance {
                 }
             } catch ( exception &e ) {
                 // std::cout << "Read exception: " << e.what() << std::endl;
-                error = e.what();
+                error = "loop read exception: " + std::string(e.what());
                 break;
             }
         }
 
         this->release_resource();
 
-        if (error.size() > 0) {
-            throw std::runtime_error("event loop error: " + error);
-        } else {
-            return false;
-        }
+        return std::pair<bool, string>(false, error);
     }
 
-    bool BinanceWsClient::process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer) {
+    std::pair<bool, string> BinanceWsClient::process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer) {
         
         if (packet.get_opcode() == WebSocketPacket::WSOpcode_Ping) {
             // Handle Ping
             // Send Pong response
             if (ssl == nullptr) {
-                throw std::runtime_error("ssl is null while send pong package");
+                return std::pair<bool, string>(false, "ssl is null while send pong package");
             }
             packet.set_fin(1);
             packet.set_opcode(WebSocketPacket::WSOpcode_Pong);
@@ -294,7 +300,7 @@ namespace binance {
             }
             this->lock.unlock();
             if (writeLength <= 0) {
-                throw std::runtime_error("failed to write pong package: " + writeError);
+                return std::pair<bool, string>(false, "failed to write pong package: " + writeError);
             }
         } else if (packet.get_opcode() == WebSocketPacket::WSOpcode_Continue) {
             // Handle continuation frame
@@ -326,8 +332,8 @@ namespace binance {
                 }
             }
         }
-
-        return true;
+\
+        return std::pair<bool, string>(true, "");
     }
 
     void BinanceWsClient::release_resource() {
@@ -336,14 +342,14 @@ namespace binance {
         
         this->recvBuffer.clear();
         this->msgBuffer.clear();
-        if (this->ssl != nullptr) {
-            try {
-                SSL_free(this->ssl);
-            } catch (std::exception &e) {}
-        }
         if (this->socketFd > 0) {
             try {
                 close(this->socketFd);
+            } catch (std::exception &e) {}
+        }
+        if (this->ssl != nullptr) {
+            try {
+                SSL_free(this->ssl);
             } catch (std::exception &e) {}
         }
         this->isConnected = false;

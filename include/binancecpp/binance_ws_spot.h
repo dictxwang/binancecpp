@@ -12,12 +12,12 @@ namespace binance {
         ~BinanceSpotWsClient() {}
     
         void initBookTicker(bool useInternal, bool useCombine);
-        bool startBookTicker(std::vector<std::string>& symbols);
+        std::pair<bool, string> startBookTicker(std::vector<std::string>& symbols);
 
         void initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal);
-        bool startUserDataStreamV1(std::string listenKey);
+        std::pair<bool, string> startUserDataStreamV1(std::string listenKey);
         void initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal);
-        bool startUserDataStream();
+        std::pair<bool, string> startUserDataStream();
     };
 }
 #endif

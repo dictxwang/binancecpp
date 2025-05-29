@@ -247,4 +247,48 @@ namespace binance {
         }
         return event;
     }
+    WsFuturesOrderCallbackEvent convertJsonToWsFuturesOrderCallbackEvent(Json::Value &json_value) {
+        WsFuturesOrderCallbackEvent event;
+        event.id = json_value["id"].asString();
+        event.status = json_value["status"].asInt();
+        if (event.status != WsCallbackStatusOK) {
+            if (json_value.isMember("error")) {
+                WsFuturesCallbackError error;
+                error.code = json_value["error"]["code"].asInt();
+                error.msg = json_value["error"]["msg"].asString();
+                event.error = error;
+            }
+        } else {
+            if (json_value.isMember("result")) {
+                Json::Value order = json_value["result"];
+                WsFuturesOrderCallbackEventResult result;
+                result.orderId = order["orderId"].asUInt64();
+                result.symbol = order["symbol"].asString();
+                result.status = order["status"].asString();
+                result.clientOrderId = order["clientOrderId"].asString();
+                result.price = str_to_dobule(order["price"]);
+                result.avgPrice = str_to_dobule(order["avgPrice"]);
+                result.origQty = str_to_dobule(order["origQty"]);
+                result.executedQty = str_to_dobule(order["executedQty"]);
+                result.cumQty = str_to_dobule(order["cumQty"]);
+                result.cumQuote = str_to_dobule(order["cumQuote"]);
+                result.timeInForce = order["timeInForce"].asString();
+                result.type = order["type"].asString();
+                result.reduceOnly = order["reduceOnly"].asBool();
+                result.closePosition = order["closePosition"].asBool();
+                result.side = order["side"].asString();
+                result.positionSide = order["positionSide"].asString();
+                result.stopPrice = str_to_dobule(order["stopPrice"]);
+                result.workingType = order["workingType"].asString();
+                result.priceProtect = order["priceProtect"].asBool();
+                result.origType = order["origType"].asString();
+                result.priceMatch = order["priceMatch"].asString();
+                result.selfTradePreventionMode = order["selfTradePreventionMode"].asString();
+                result.goodTillDate = order["goodTillDate"].asUInt64();
+                result.updateTime = order["updateTime"].asUInt64();
+                event.result = result;
+            }
+        }
+        return event;
+    }
 }

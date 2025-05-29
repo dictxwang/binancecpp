@@ -1,6 +1,8 @@
 #ifndef _BINANCE_ENUM_H_
 #define _BINANCE_ENUM_H_
 
+using namespace std;
+
 namespace binance {
 
     enum ApiSecretType {
@@ -70,6 +72,8 @@ namespace binance {
 
     const string FuturesUserDataAccountUpdate = "ACCOUNT_UPDATE";
     const string FuturesUserDataOrderTradeUpdate = "ORDER_TRADE_UPDATE";
+
+    const int WsCallbackStatusOK = 200;
 }
 
 #endif

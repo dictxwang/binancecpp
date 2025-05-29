@@ -5,6 +5,7 @@
 #include "json/json.h"
 #include "util/binance_tool.h"
 #include "util/common_tool.h"
+#include "binance_enum.h"
 
 using namespace std;
 
@@ -175,11 +176,49 @@ namespace binance {
 	    string priceMode; // "pm"`  // Price match mode
 	    uint64_t gtd; // "gtd"` // TIF GTD order auto cancel time
     };
+
+    struct WsFuturesCallbackError {
+        int code;
+        string msg;
+    };
+    struct WsFuturesOrderCallbackEventResult {
+        uint64_t orderId;
+        string symbol;
+        string status;
+        string clientOrderId;
+        double price;
+        double avgPrice;
+        double origQty;
+        double executedQty;
+        double cumQty;
+        double cumQuote;
+        string timeInForce;
+        string type;
+        bool reduceOnly;
+        bool closePosition;
+        string side;
+        string positionSide;
+        double stopPrice;
+        string workingType;
+        bool priceProtect;
+        string origType;
+        string priceMatch;
+        string selfTradePreventionMode;
+        uint64_t goodTillDate;
+        uint64_t updateTime;
+    };
+    struct WsFuturesOrderCallbackEvent{
+        string id;
+        int status;
+        WsFuturesCallbackError error;
+        WsFuturesOrderCallbackEventResult result;
+    };
     
     WsFuturesMarkPriceEvent convertJsonToWsFuturesMarkPriceEvent(Json::Value &json_value);
     WsFuturesBookTickerEvent convertJsonToWsFuturesBookTickerEvent(Json::Value &json_value);
     WsFuturesAccountUpdateEvent convertJsonToWsFuturesAccountUpdateEvent(Json::Value &json_value);
     WsFuturesOrderTradeUpdateEvent convertJsonToWsFuturesOrderTradeUpdateEvent(Json::Value &json_value);
+    WsFuturesOrderCallbackEvent convertJsonToWsFuturesOrderCallbackEvent(Json::Value &json_value);
     /* End Futures */
 
 }

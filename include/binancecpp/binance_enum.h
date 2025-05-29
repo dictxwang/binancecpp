@@ -12,6 +12,7 @@ namespace binance {
     };
 
     enum MarketType {
+        WALLET,
         SPOT,
         FUTURES,
         OPTIONS,
@@ -73,6 +74,7 @@ namespace binance {
     const string FuturesUserDataAccountUpdate = "ACCOUNT_UPDATE";
     const string FuturesUserDataOrderTradeUpdate = "ORDER_TRADE_UPDATE";
 
+    const int RestCodeOK = 0;
     const int WsCallbackStatusOK = 200;
 }
 

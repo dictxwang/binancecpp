@@ -25,6 +25,7 @@ namespace binance {
         void start_userDataStream(CommonRestResponse<std::string> &response);
         void keep_userDataStream(const std::string listenKey, CommonRestResponse<std::string> &response);
 
+        void create_new_order(SpotNewOrder& order, CommonRestResponse<SpotNewOrderResult> &response);
     private:
         uint64_t get_property_timestamp();
 

@@ -219,4 +219,8 @@ namespace binance {
         }
     }
 
+    void BinanceSpotRestClient::create_new_order(SpotNewOrder& order, CommonRestResponse<SpotNewOrderResult> &response) {
+        // TODO
+    }
+
 } // namespace binance

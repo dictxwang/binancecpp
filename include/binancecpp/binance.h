@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <curl/curl.h>
+#include "binance_param.h"
 #include "binance_model.h"
 #include "binance_ws_model.h"
 #include "binance_ws_param.h"
@@ -18,6 +19,7 @@
 
 namespace binance {
 
+    const std::pair<std::string, std::string> WALLET_API_URL = {"https://api.binance.com", "api.binance.com"};
     const std::pair<std::string, std::string> SPOT_API_URL = {"https://api.binance.com", "api.binance.com"};
     const std::pair<std::string, std::string> FUTURES_API_URL = {"https://fapi.binance.com", "fapi.binance.com"};
     const std::pair<std::string, std::string> FUTURES_INTERNAL_API_URL = {"https://fapi-mm.binance.com", "fapi-mm.binance.com"};
@@ -36,6 +38,8 @@ namespace binance {
 
     static std::pair<std::string, std::string> getBaseUrl(MarketType marketType, bool useInternal) {
         switch (marketType) {
+            case WALLET:
+                return WALLET_API_URL;
             case SPOT:
                 return SPOT_API_URL;
             case FUTURES:

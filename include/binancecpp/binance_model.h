@@ -71,6 +71,10 @@ namespace binance {
         vector<string> permissions;
         uint64_t uid;
     };
+
+    struct SpotNewOrderResult {
+        // TODO
+    };
     /* End: structs of spot */
 
     /* Start: structs of futures */

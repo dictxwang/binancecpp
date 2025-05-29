@@ -107,6 +107,8 @@ namespace binance {
         // Constructor
         BinanceWsClient() {
             this->ssl = nullptr;
+            this->customCallback = nullptr;
+            this->messageChannel = nullptr;
         }
 
         // Destructor

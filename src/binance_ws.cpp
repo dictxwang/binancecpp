@@ -313,8 +313,8 @@ namespace binance {
             // reader.parse(std::string(mssageBuffer.bytes(), mssageBuffer.length()).c_str() , json_result);
 
             // Cumstomer could choose Json library
-            std::string messageJson = std::string(mssageBuffer.bytes(), mssageBuffer.length()).c_str() ;
-            
+            std::string messageJson = std::string(mssageBuffer.bytes(), mssageBuffer.length()).c_str();
+
             if (this->messageChannel == nullptr && this->customCallback == nullptr) {
                 std::cout << "require message-channel or custom callback for consume: " << messageJson << std::endl;
             } else {

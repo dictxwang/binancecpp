@@ -65,6 +65,7 @@ namespace binance {
 
     const string ORDER_RESP_TYPE_ACK = "ACK"; // DEFAULT
     const string ORDER_RESP_TYPE_RESULT = "RESULT";
+    const string ORDER_RESP_TYPE_FULL = "FULL";
 
     const string TimeInForce_GTC = "GTC";
     const string TimeInForce_IOC = "IOC";

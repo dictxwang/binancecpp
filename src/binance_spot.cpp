@@ -220,7 +220,88 @@ namespace binance {
     }
 
     void BinanceSpotRestClient::create_new_order(SpotNewOrder& order, CommonRestResponse<SpotNewOrderResult> &response) {
-        // TODO
+        std::string url = this->serverMeta.baseUrl + "/api/v3/order";
+
+        binance::CommonRestResponse<std::string> action_response;
+        std::string action = "POST";
+        std::vector <std::string> empty;
+        std::vector <std::string> query_params;
+        std::vector <std::string> body_params;
+        query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        body_params.push_back("symbol=" + order.symbol);
+        body_params.push_back("side=" + order.side);
+        body_params.push_back("type=" + order.type);
+        if (order.timeInForce.size() > 0) {
+            body_params.push_back("timeInForce=" + order.timeInForce);
+        }
+        if (order.quantity > 0) {
+            body_params.push_back("quantity=" + strHelper::toString(order.quantity));
+        }
+        if (order.quoteOrderQty > 0) {
+            body_params.push_back("quoteOrderQty=" + strHelper::toString(order.quoteOrderQty));
+        }
+        if (order.price > 0) {
+            body_params.push_back("price=" + strHelper::toString(order.price));
+        }
+        if (order.newClientOrderId.size() > 0) {
+            body_params.push_back("newClientOrderId=" + order.newClientOrderId);
+        }
+        if (order.newOrderRespType.size() > 0) {
+            body_params.push_back("newOrderRespType=" + order.newOrderRespType);
+        }
+        api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
+        if (action_response.code != 0) {
+            response.code = action_response.code;
+            response.msg = action_response.msg;
+            return;
+        }
+        // Parse json value
+        if (action_response.data.size() > 0) {
+            Json::Value json_result;
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse(action_response.data, json_result);
+
+            response.data.symbol = json_result["symbol"].asString();
+            response.data.orderId = json_result["orderId"].asUInt64();
+            response.data.orderListId = json_result["orderListId"].asInt64();
+            response.data.clientOrderId = json_result["clientOrderId"].asString();
+            response.data.transactTime = json_result["transactTime"].asUInt64();
+            if (json_result.isMember("price")) {
+                response.data.price = str_to_dobule(json_result["price"]);
+            }
+            if (json_result.isMember("origQty")) {
+                response.data.price = str_to_dobule(json_result["origQty"]);
+            }
+            if (json_result.isMember("executedQty")) {
+                response.data.price = str_to_dobule(json_result["executedQty"]);
+            }
+            if (json_result.isMember("origQuoteOrderQty")) {
+                response.data.price = str_to_dobule(json_result["origQuoteOrderQty"]);
+            }
+            if (json_result.isMember("cummulativeQuoteQty")) {
+                response.data.price = str_to_dobule(json_result["cummulativeQuoteQty"]);
+            }
+            if (json_result.isMember("status")) {
+                response.data.status = json_result["status"].asString();
+            }
+            if (json_result.isMember("timeInForce")) {
+                response.data.status = json_result["timeInForce"].asString();
+            }
+            if (json_result.isMember("type")) {
+                response.data.status = json_result["type"].asString();
+            }
+            if (json_result.isMember("side")) {
+                response.data.status = json_result["side"].asString();
+            }
+            if (json_result.isMember("workingTime")) {
+                response.data.status = json_result["workingTime"].asUInt64();
+            }
+            if (json_result.isMember("selfTradePreventionMode")) {
+                response.data.status = json_result["selfTradePreventionMode"].asString();
+            }
+        }
+        return;
     }
 
 } // namespace binance

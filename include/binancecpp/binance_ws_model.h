@@ -11,6 +11,7 @@ using namespace std;
 
 namespace binance {
 
+    /* Start Spot */
     struct WsLogonOnParam {
         string apiKey;
         string signature;
@@ -88,6 +89,7 @@ namespace binance {
     WsAccountUpdateBalanceEvent convertJsonToWsAccountUpdateBalanceEvent(Json::Value &json_value);
     WsSpotAccountUpdateEvent convertJsonToWsWsSpotAccountUpdateEvent(Json::Value &json_value);
     WsSpotOrderUpdateEvent convertJsonToWsSpotOrderUpdateEvent(Json::Value &json_value);
+    /* End Spot */
 
     /* Start Futures */
     struct WsFuturesMarkPriceEvent {

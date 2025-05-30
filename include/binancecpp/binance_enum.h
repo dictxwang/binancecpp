@@ -25,6 +25,9 @@ namespace binance {
         WsMPOneSecond,
     };
 
+    const string ACCOUNT_TYPE_SPOT = "SPOT";
+    const string ACCOUNT_TYPE_MARGIN = "MARGIN";
+
     const string MarginType_ISOLATED = "ISOLATED";
     const string MarginType_CROSSED = "CROSSED";
 
@@ -76,6 +79,39 @@ namespace binance {
 
     const int RestCodeOK = 0;
     const int WsCallbackStatusOK = 200;
+
+    // https://developers.binance.com/docs/wallet/asset/user-universal-transfer
+    const string UT_MAIN_UMFUTURE = "MAIN_UMFUTURE";
+    const string UT_MAIN_CMFUTURE = "MAIN_CMFUTURE";
+    const string UT_MAIN_MARGIN = "MAIN_MARGIN";
+    const string UT_UMFUTURE_MAIN = "UMFUTURE_MAIN";
+    const string UT_UMFUTURE_MARGIN = "UMFUTURE_MARGIN";
+    const string UT_CMFUTURE_MAIN = "CMFUTURE_MAIN";
+    const string UT_CMFUTURE_MARGIN = "CMFUTURE_MARGIN";
+    const string UT_MARGIN_MAIN = "MARGIN_MAIN";
+    const string UT_MARGIN_UMFUTURE = "MARGIN_UMFUTURE";
+    const string UT_MARGIN_CMFUTURE = "MARGIN_CMFUTURE";
+    const string UT_ISOLATEDMARGIN_MARGIN = "ISOLATEDMARGIN_MARGIN";
+    const string UT_MARGIN_ISOLATEDMARGIN = "MARGIN_ISOLATEDMARGIN";
+    const string UT_ISOLATEDMARGIN_ISOLATEDMARGIN = "ISOLATEDMARGIN_ISOLATEDMARGIN";
+    const string UT_MAIN_FUNDING = "MAIN_FUNDING";
+    const string UT_FUNDING_MAIN = "FUNDING_MAIN";
+    const string UT_FUNDING_UMFUTURE = "FUNDING_UMFUTURE";
+    const string UT_UMFUTURE_FUNDING = "UMFUTURE_FUNDING";
+    const string UT_MARGIN_FUNDING = "MARGIN_FUNDING";
+    const string UT_FUNDING_MARGIN = "FUNDING_MARGIN";
+    const string UT_FUNDING_CMFUTURE = "FUNDING_CMFUTURE";
+    const string UT_CMFUTURE_FUNDING = "CMFUTURE_FUNDING";
+    const string UT_MAIN_OPTION = "MAIN_OPTION";
+    const string UT_OPTION_MAIN = "OPTION_MAIN";
+    const string UT_UMFUTURE_OPTION = "UMFUTURE_OPTION";
+    const string UT_OPTION_UMFUTURE = "OPTION_UMFUTURE";
+    const string UT_MARGIN_OPTION = "MARGIN_OPTION";
+    const string UT_OPTION_MARGIN = "OPTION_MARGIN";
+    const string UT_FUNDING_OPTION = "FUNDING_OPTION";
+    const string UT_OPTION_FUNDING = "OPTION_FUNDING";
+    const string UT_MAIN_PORTFOLIO_MARGIN = "MAIN_PORTFOLIO_MARGIN";
+    const string UT_PORTFOLIO_MARGIN_MAIN = "PORTFOLIO_MARGIN_MAIN";
 }
 
 #endif

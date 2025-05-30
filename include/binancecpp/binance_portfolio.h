@@ -9,6 +9,23 @@
 
 namespace binance {
 
+    class BinancePortfolioRestClient : public BinanceRestClient {
+    public:
+        // Constructor
+        BinancePortfolioRestClient() : BinanceRestClient() {}
+
+        // Destructor
+        ~BinancePortfolioRestClient() {
+        }
+
+
+    public:
+        // Public methods
+        void init(const std::string& apiKey, const std::string& secretKey, bool useInternal = false);
+
+        // Some api methods
+    
+    };
 }
 
 #endif

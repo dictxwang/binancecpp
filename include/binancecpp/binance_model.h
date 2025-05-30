@@ -73,9 +73,40 @@ namespace binance {
     };
 
     struct SpotNewOrderResult {
-        // TODO
+        string symbol;
+        uint64_t orderId;
+        long orderListId;
+        string clientOrderId;
+        uint64_t transactTime;
+        double price;
+        double origQty;
+        double executedQty;
+        double origQuoteOrderQty;
+        double cummulativeQuoteQty;
+        string status;
+        string timeInForce;
+        string type;
+        string side;
+        uint64_t workingTime;
+        string selfTradePreventionMode;
     };
     /* End: structs of spot */
+
+    /* Start: structs of wallet */
+    struct WalletsDutfTranserResult {
+        string fromAsset;
+        double amount;
+        uint64_t operateTime;
+        double serviceChargeAmount;
+        double transferedAmount;
+        uint64_t tranId;
+    };
+    struct WalletsDutfTranserResp {
+        double totalServiceCharge = 0;
+        double totalTransfered = 0;
+        vector<WalletsDutfTranserResult> transferResult;
+    };
+    /* End: structs of wallet */
 
     /* Start: structs of futures */
     struct FuturesExchangeInfo {

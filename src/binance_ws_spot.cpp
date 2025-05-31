@@ -76,34 +76,29 @@ namespace binance {
         
         // this->release_resource();
 
-        std::cout << "A" << std::endl;
         std::string endpoint = this->wsEndpoint.third;
         std::pair<bool, string> result = this->connect_endpoint(endpoint);
         if (!result.first) {
             return result;
         }
 
-        std::cout << "B" << std::endl;
         // session logon
         result = this->send_session_logon();
         if (!result.first) {
             return result;
         }
 
-        std::cout << "C" << std::endl;
         // subscribe
         Json::Value reqJson;
         reqJson["id"] = this->sessionID;
         reqJson["method"] = "userDataStream.subscribe";
         std::string subscribeMessage = serialize_json_value(reqJson);
 
-        std::cout << "D" << std::endl;
         result = this->send_subscribe(subscribeMessage);
         if (!result.first) {
             return result;
         }
 
-        std::cout << "E" << std::endl;
         return this->start_event_loop();
     }
 }

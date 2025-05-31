@@ -255,6 +255,7 @@ namespace binance {
             response.msg = action_response.msg;
             return;
         }
+
         // Parse json value
         if (action_response.data.size() > 0) {
             Json::Value json_result;
@@ -271,34 +272,34 @@ namespace binance {
                 response.data.price = str_to_dobule(json_result["price"]);
             }
             if (json_result.isMember("origQty")) {
-                response.data.price = str_to_dobule(json_result["origQty"]);
+                response.data.origQty = str_to_dobule(json_result["origQty"]);
             }
             if (json_result.isMember("executedQty")) {
-                response.data.price = str_to_dobule(json_result["executedQty"]);
+                response.data.executedQty = str_to_dobule(json_result["executedQty"]);
             }
             if (json_result.isMember("origQuoteOrderQty")) {
-                response.data.price = str_to_dobule(json_result["origQuoteOrderQty"]);
+                response.data.origQuoteOrderQty = str_to_dobule(json_result["origQuoteOrderQty"]);
             }
             if (json_result.isMember("cummulativeQuoteQty")) {
-                response.data.price = str_to_dobule(json_result["cummulativeQuoteQty"]);
+                response.data.cummulativeQuoteQty = str_to_dobule(json_result["cummulativeQuoteQty"]);
             }
             if (json_result.isMember("status")) {
                 response.data.status = json_result["status"].asString();
             }
             if (json_result.isMember("timeInForce")) {
-                response.data.status = json_result["timeInForce"].asString();
+                response.data.timeInForce = json_result["timeInForce"].asString();
             }
             if (json_result.isMember("type")) {
-                response.data.status = json_result["type"].asString();
+                response.data.type = json_result["type"].asString();
             }
             if (json_result.isMember("side")) {
-                response.data.status = json_result["side"].asString();
+                response.data.side = json_result["side"].asString();
             }
             if (json_result.isMember("workingTime")) {
-                response.data.status = json_result["workingTime"].asUInt64();
+                response.data.workingTime = json_result["workingTime"].asUInt64();
             }
             if (json_result.isMember("selfTradePreventionMode")) {
-                response.data.status = json_result["selfTradePreventionMode"].asString();
+                response.data.selfTradePreventionMode = json_result["selfTradePreventionMode"].asString();
             }
         }
         return;

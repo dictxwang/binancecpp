@@ -185,7 +185,7 @@ namespace binance {
                 for (int i = 0; i < positions.size(); i++) {
                     WsFuturesAccountUpdatePositionEvent pe;
                     pe.symbol = positions[i]["s"].asString();
-                    pe.postionAmout = str_to_dobule(positions[i]["pa"]);
+                    pe.positionAmout = str_to_dobule(positions[i]["pa"]);
                     pe.entryPrice = str_to_dobule(positions[i]["ep"]);
                     pe.breakevenPrice = str_to_dobule(positions[i]["bep"]);
                     pe.accumulatedRealized = str_to_dobule(positions[i]["cr"]);

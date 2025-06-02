@@ -121,7 +121,7 @@ namespace binance {
     };
     struct WsFuturesAccountUpdatePositionEvent {
         string symbol; // s
-        double postionAmout; // pa
+        double positionAmout; // pa
         double entryPrice; // ep
         double breakevenPrice; // ebp
         double accumulatedRealized; // cr (Pre-fee) Accumulated Realized

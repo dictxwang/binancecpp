@@ -116,6 +116,7 @@ namespace binance {
         std::vector <std::string> empty;
         std::vector <std::string> query_params;
         query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
+        
         api_action(url, binance::SecTypeSignature, action, empty, query_params, empty, action_response);
         if (action_response.code != 0) {
             response.code = action_response.code;

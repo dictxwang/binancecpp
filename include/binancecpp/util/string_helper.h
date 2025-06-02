@@ -30,6 +30,8 @@ public:
 
     static int replaceStringOnce( std::string& str, const char *from, const char *to, int offset);
     static bool replaceString( std::string& str, const char *from, const char *to);
+
+    static std::string boolToString(bool val);
 };
 
 

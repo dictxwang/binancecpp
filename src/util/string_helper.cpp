@@ -2,6 +2,14 @@
 #include <algorithm>
 #include <cctype>
 
+std::string strHelper::boolToString(bool val)
+{
+    if (val) {
+        return "true";
+    } else {
+        return "false";
+    }
+}
 
 std::string strHelper::toUpper(std::string& str)
 {

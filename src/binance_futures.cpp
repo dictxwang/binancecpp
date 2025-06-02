@@ -447,7 +447,7 @@ namespace binance {
         std::vector <std::string> query_params;
         std::vector <std::string> body_params;
         query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
-        body_params.push_back("feeBurn=" + strHelper::toString(feeBurn));
+        body_params.push_back("feeBurn=" + strHelper::boolToString(feeBurn));
         api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
         if (action_response.code != 0) {
             response.code = action_response.code;
@@ -527,7 +527,7 @@ namespace binance {
         std::vector <std::string> query_params;
         std::vector <std::string> body_params;
         query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
-        body_params.push_back("dualSidePosition=" + strHelper::toString(dualSidePosition));
+        body_params.push_back("dualSidePosition=" + strHelper::boolToString(dualSidePosition));
         api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
         if (action_response.code != 0) {
             response.code = action_response.code;
@@ -606,7 +606,7 @@ namespace binance {
         std::vector <std::string> query_params;
         std::vector <std::string> body_params;
         query_params.push_back("timestamp=" + std::to_string(get_property_timestamp()));
-        body_params.push_back("multiAssetsMargin=" + strHelper::toString(multiAssetsMargin));
+        body_params.push_back("multiAssetsMargin=" + strHelper::boolToString(multiAssetsMargin));
         api_action(url, binance::SecTypeSignature, action, empty, query_params, body_params, action_response);
         if (action_response.code != 0) {
             response.code = action_response.code;

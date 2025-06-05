@@ -335,9 +335,10 @@ namespace binance {
             json_result.clear();
             reader.parse(action_response.data, json_result);
 
+            // std::cout << action_response.data << std::endl;
             if (json_result.isArray()) {
                 std::vector<binance::OrderRateLimit> data;
-                for (int i = 1; i < json_result.size(); i++) {
+                for (int i = 0; i < json_result.size(); i++) {
                     binance::OrderRateLimit rateLimit;
                     rateLimit.rateLimitType = json_result[i]["rateLimitType"].asString();
                     rateLimit.interval = json_result[i]["interval"].asString();

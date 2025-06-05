@@ -162,7 +162,7 @@ namespace binance {
 
         if (call_result.size() > 0 ) {
             // std::cout << "api response: " << call_result << std::endl;
-            if (call_result.find("\"code\"") && call_result.find("\"msg\"")) {
+            if (call_result.find("\"code\"") != std::string::npos && call_result.find("\"msg\"") != std::string::npos) {
                 try {
                     Json::Value json_result;
                     Json::Reader reader;

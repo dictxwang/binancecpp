@@ -14,4 +14,4 @@ brew install curl
 brew install libsodium
 
 
-# Could link into project as 3rdparty in git submodule
+## Could link into project as 3rdparty in git submodule

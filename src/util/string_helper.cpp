@@ -11,16 +11,18 @@ std::string strHelper::boolToString(bool val)
     }
 }
 
-std::string strHelper::toUpper(std::string& str)
+std::string strHelper::toUpper(std::string& original)
 {
+    std::string str = std::string(original);
     std::transform(str.begin(), str.end(), str.begin(), [](char& c){
         return std::toupper(c);
     });
 	return str;
 }
 
-std::string strHelper::toLower(std::string& str)
+std::string strHelper::toLower(std::string& original)
 {
+    std::string str = std::string(original);
     std::transform(str.begin(), str.end(), str.begin(), [](char& c){
         return std::tolower(c);
     });

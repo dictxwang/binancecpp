@@ -32,6 +32,8 @@ namespace binance {
         string baseAsset;
         string quoteAsset;
         vector<string> orderTypes;
+        int baseAssetPrecision;
+        int quoteAssetPrecision;
         double minPrice;
         double maxPrice;
         double tickSize;
@@ -118,6 +120,10 @@ namespace binance {
         string quoteAsset;
         vector<string> orderTypes;
         vector<string> timeInForces;
+        int pricePrecision;
+        int quantityPrecision;
+        int baseAssetPrecision;
+        int quotePrecision;
         double minPrice;
         double maxPrice;
         double tickSize;

@@ -87,6 +87,12 @@ namespace binance {
                             exchangeInfo.timeInForces.push_back(symbols[i]["timeInForce"][j].asString());
                         }
                     }
+
+                    exchangeInfo.pricePrecision = symbols[i]["pricePrecision"].asInt();
+                    exchangeInfo.quantityPrecision = symbols[i]["quantityPrecision"].asInt();
+                    exchangeInfo.baseAssetPrecision = symbols[i]["baseAssetPrecision"].asInt();
+                    exchangeInfo.quotePrecision = symbols[i]["quotePrecision"].asInt();
+                    
                     if (symbols[i].isMember("filters")) {
                         for (int j = 0; j < symbols[i]["filters"].size(); j++) {
                             if (symbols[i]["filters"][j].isMember("filterType")) {

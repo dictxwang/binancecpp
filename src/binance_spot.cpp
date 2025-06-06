@@ -85,6 +85,10 @@ namespace binance {
                             exchangeInfo.orderTypes.push_back(symbols[i]["orderTypes"][j].asString());
                         }
                     }
+
+                    exchangeInfo.baseAssetPrecision = symbols[i]["baseAssetPrecision"].asInt();
+                    exchangeInfo.quoteAssetPrecision = symbols[i]["quoteAssetPrecision"].asInt();
+
                     if (symbols[i].isMember("filters")) {
                         for (int j = 0; j < symbols[i]["filters"].size(); j++) {
                             if (symbols[i]["filters"][j].isMember("filterType")) {

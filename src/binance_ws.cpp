@@ -335,6 +335,11 @@ namespace binance {
 \
         return std::pair<bool, string>(true, "");
     }
+    
+    void BinanceWsClient::stopService() {
+        this->isConnected = false;
+        this->release_resource();
+    }
 
     void BinanceWsClient::release_resource() {
 

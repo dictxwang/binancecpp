@@ -157,6 +157,7 @@ namespace binance {
         void setRemoteIP(const std::string& remoteIP); // call before init
         void setMessageChannel(moodycamel::ConcurrentQueue<std::string> *messageChannel);
         void setMessageCallback(WS_CB customCallback);
+        void stopService();
 
     protected:
         // Protected methods

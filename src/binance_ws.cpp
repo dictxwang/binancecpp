@@ -30,8 +30,6 @@ namespace binance {
                 this->wsEndpoint = getWsBaseEndpoint(marketType, useInternal);
             }
         }
-        this->localIP = "";
-        this->remoteIP = "";
 
         if (secretKey != "") {
             this->parsedSecretKey = parse_private_key(secretKey);

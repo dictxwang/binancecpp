@@ -7,7 +7,7 @@ namespace binance {
         BinanceWsClient::init("","", MarketType::SPOT, useInternal, useCombine, false);
     }
 
-    std::pair<bool, string> BinanceSpotWsClient::startBookTicker(std::vector<std::string>& symbols) {
+    std::pair<bool, string> BinanceSpotWsClient::startBookTicker(const std::vector<std::string> symbols) {
         
         // release the connection if existed, aviod exception by multi call
         // this->release_resource();
@@ -43,17 +43,17 @@ namespace binance {
         return this->start_event_loop();
     }
 
-    void BinanceSpotWsClient::initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal) {
+    void BinanceSpotWsClient::initUserDataStream(const std::string apiKey, const std::string secretKey, bool useInternal) {
 
         BinanceWsClient::init(apiKey, secretKey, MarketType::SPOT, useInternal, false, true);
     }
 
-    void BinanceSpotWsClient::initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal) {
+    void BinanceSpotWsClient::initUserDataStreamV1(const std::string apiKey, const std::string secretKey, bool useInternal) {
 
         BinanceWsClient::init(apiKey, secretKey, MarketType::SPOT, useInternal, false, false);
     }
 
-    std::pair<bool, string> BinanceSpotWsClient::startUserDataStreamV1(std::string listenKey) {
+    std::pair<bool, string> BinanceSpotWsClient::startUserDataStreamV1(const std::string listenKey) {
         
         // this->release_resource();
 

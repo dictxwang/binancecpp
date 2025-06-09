@@ -93,12 +93,12 @@ namespace binance {
 
         public:
             // Public methods
-            void setLocalIP(const std::string& localIP); // call before init if need
-            void setRemoteIP(const std::string& remoteIP); // call before init if need
+            void setLocalIP(const std::string localIP); // call before init if need
+            void setRemoteIP(const std::string remoteIP); // call before init if need
 
         protected:
             // Protected methods
-            void init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal = false);
+            void init(const std::string apiKey, const std::string secretKey, MarketType marketType, bool useInternal = false);
 
             CURLcode curl_api(CURL* curl, std::string &url, std::string &result_json );
 		    CURLcode curl_api_with_header(CURL* curl, std::string &url, std::string &result_json , std::vector <std::string> &extra_http_header, std::string &post_data, std::string &action );

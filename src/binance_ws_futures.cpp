@@ -6,7 +6,7 @@ namespace binance {
         BinanceWsClient::init("","", MarketType::FUTURES, useInternal, useCombine, false);
     }
 
-    std::pair<bool, string> BinanceFuturesWsClient::startBookTickerV1(std::vector<std::string>& symbols) {
+    std::pair<bool, string> BinanceFuturesWsClient::startBookTickerV1(std::vector<std::string> symbols) {
 
         if (symbols.size() == 0) {
             return std::pair<bool, string>(false, "subscribe symbols is empty");
@@ -60,7 +60,7 @@ namespace binance {
         BinanceWsClient::init("","", MarketType::FUTURES, useInternal, useCombine, false);
     }
 
-    std::pair<bool, string> BinanceFuturesWsClient::startMarkPriceV1(std::vector<std::string>& symbols, binance::WsMarkPriceInterval interval) {
+    std::pair<bool, string> BinanceFuturesWsClient::startMarkPriceV1(std::vector<std::string> symbols, binance::WsMarkPriceInterval interval) {
                 
         // this->release_resource();
 
@@ -118,11 +118,11 @@ namespace binance {
         return this->start_event_loop();
     }
 
-    void BinanceFuturesWsClient::initUserDataStreamV1(std::string apiKey, std::string secretKey, bool useInternal) {
+    void BinanceFuturesWsClient::initUserDataStreamV1(const std::string apiKey, const std::string secretKey, bool useInternal) {
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, false);
     }
 
-    std::pair<bool, string> BinanceFuturesWsClient::startUserDataStreamV1(std::string listenKey) {
+    std::pair<bool, string> BinanceFuturesWsClient::startUserDataStreamV1(const std::string listenKey) {
         
         // this->release_resource();
 
@@ -141,7 +141,7 @@ namespace binance {
         return this->start_event_loop();
     }
 
-    void BinanceFuturesWsClient::initUserDataStream(std::string apiKey, std::string secretKey, bool useInternal) {
+    void BinanceFuturesWsClient::initUserDataStream(const std::string apiKey, const std::string secretKey, bool useInternal) {
 
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, true);
     }
@@ -179,7 +179,7 @@ namespace binance {
         return this->start_event_loop();
     }
 
-    void BinanceFuturesWsClient::initOrderService(std::string apiKey, std::string secretKey, bool useInternal) {
+    void BinanceFuturesWsClient::initOrderService(const std::string apiKey, const std::string secretKey, bool useInternal) {
         BinanceWsClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal, false, true);
     }
 

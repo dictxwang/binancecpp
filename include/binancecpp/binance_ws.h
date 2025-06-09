@@ -153,15 +153,15 @@ namespace binance {
 
     public:
         // Public methods
-        void setLocalIP(const std::string& localIP); // call before init
-        void setRemoteIP(const std::string& remoteIP); // call before init
+        void setLocalIP(const std::string localIP); // call before init
+        void setRemoteIP(const std::string remoteIP); // call before init
         void setMessageChannel(moodycamel::ConcurrentQueue<std::string> *messageChannel);
         void setMessageCallback(WS_CB customCallback);
         void stopService();
 
     protected:
         // Protected methods
-        void init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal, bool useCombine, bool useTrading);
+        void init(const std::string apiKey, const std::string secretKey, MarketType marketType, bool useInternal, bool useCombine, bool useTrading);
         // virtual std::string make_subscribe_frame(std::vector<std::string> &params);
         std::pair<bool, string> connect_endpoint(std::string& handshakePath);
         std::pair<bool, string> send_session_logon();

@@ -2,7 +2,7 @@
 
 namespace binance {
     
-    void BinanceWalletRestClient::init(const std::string& apiKey, const std::string& secretKey, bool useInternal) {
+    void BinanceWalletRestClient::init(const std::string apiKey, const std::string secretKey, bool useInternal) {
         BinanceRestClient::init(apiKey, secretKey, MarketType::WALLET, useInternal);
     }
 

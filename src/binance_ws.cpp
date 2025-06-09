@@ -2,10 +2,10 @@
 
 namespace binance {
 
-    void BinanceWsClient::setLocalIP(const std::string& localIP) {
+    void BinanceWsClient::setLocalIP(const std::string localIP) {
         this->localIP = localIP;
     }
-    void BinanceWsClient::setRemoteIP(const std::string& remoteIP) {
+    void BinanceWsClient::setRemoteIP(const std::string remoteIP) {
         this->remoteIP = remoteIP;
     }
     void BinanceWsClient::setMessageChannel(moodycamel::ConcurrentQueue<std::string> *messageChannel) {
@@ -14,7 +14,7 @@ namespace binance {
     void BinanceWsClient::setMessageCallback(WS_CB customCallback) {
         this->customCallback = customCallback;
     }
-    void BinanceWsClient::init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal, bool useCombine, bool isTrading) {
+    void BinanceWsClient::init(const std::string apiKey, const std::string secretKey, MarketType marketType, bool useInternal, bool useCombine, bool isTrading) {
         this->apiKey = apiKey;
         this->secretKey = secretKey;
         this->marketType = marketType;
@@ -352,9 +352,11 @@ namespace binance {
                 close(this->socketFd);
             } catch (std::exception &e) {}
         }
-        if (this->ssl != nullptr) {
+        if (this->ssl != nullptr && SSL_get_shutdown(this->ssl) != SSL_SENT_SHUTDOWN) {
             try {
+                SSL_shutdown(this->ssl);
                 SSL_free(this->ssl);
+                this->ssl = nullptr;
             } catch (std::exception &e) {}
         }
         this->isConnected = false;

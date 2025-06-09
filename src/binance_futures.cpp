@@ -3,7 +3,7 @@
 
 namespace binance {
 
-    void BinanceFuturesRestClient::init(const std::string& apiKey, const std::string& secretKey, bool useInternal) {
+    void BinanceFuturesRestClient::init(const std::string apiKey, const std::string secretKey, bool useInternal) {
         BinanceRestClient::init(apiKey, secretKey, MarketType::FUTURES, useInternal);
     }
 
@@ -92,7 +92,7 @@ namespace binance {
                     exchangeInfo.quantityPrecision = symbols[i]["quantityPrecision"].asInt();
                     exchangeInfo.baseAssetPrecision = symbols[i]["baseAssetPrecision"].asInt();
                     exchangeInfo.quotePrecision = symbols[i]["quotePrecision"].asInt();
-                    
+
                     if (symbols[i].isMember("filters")) {
                         for (int j = 0; j < symbols[i]["filters"].size(); j++) {
                             if (symbols[i]["filters"][j].isMember("filterType")) {
@@ -214,7 +214,7 @@ namespace binance {
         }
     }
     
-    void BinanceFuturesRestClient::get_commissionRate(std::string &symbol, CommonRestResponse<binance::FuturesCommissionRate> &response) {
+    void BinanceFuturesRestClient::get_commissionRate(const std::string symbol, CommonRestResponse<binance::FuturesCommissionRate> &response) {
         std::string url = this->serverMeta.baseUrl + "/fapi/v1/commissionRate";
 
         binance::CommonRestResponse<std::string> action_response;
@@ -281,7 +281,7 @@ namespace binance {
         }
     }
     
-    void BinanceFuturesRestClient::get_symbolConfig(std::string &symbol, CommonRestResponse<binance::FuturesSymbolConfig> &response) {
+    void BinanceFuturesRestClient::get_symbolConfig(const std::string symbol, CommonRestResponse<binance::FuturesSymbolConfig> &response) {
         std::string url = this->serverMeta.baseUrl + "/fapi/v1/symbolConfig";
 
         binance::CommonRestResponse<std::string> action_response;
@@ -485,7 +485,7 @@ namespace binance {
             }
         }
     }
-    void BinanceFuturesRestClient::change_marginType(std::string &symbol, std::string &marginType, CommonRestResponse<bool> &response) {
+    void BinanceFuturesRestClient::change_marginType(const std::string symbol, const std::string marginType, CommonRestResponse<bool> &response) {
         std::string url = this->serverMeta.baseUrl + "/fapi/v1/marginType";
 
         binance::CommonRestResponse<std::string> action_response;
@@ -566,7 +566,7 @@ namespace binance {
         }
     }
 
-    void BinanceFuturesRestClient::change_initialLeverage(std::string &symbol, int leverage, CommonRestResponse<FuturesChangeLeverageResult> &response) {
+    void BinanceFuturesRestClient::change_initialLeverage(const std::string symbol, int leverage, CommonRestResponse<FuturesChangeLeverageResult> &response) {
         std::string url = this->serverMeta.baseUrl + "/fapi/v1/leverage";
 
         binance::CommonRestResponse<std::string> action_response;
@@ -645,7 +645,7 @@ namespace binance {
         }
     }
 
-    void BinanceFuturesRestClient::modify_isolatedPositionMargin(std::string &symbol, std::string &positionSide, double amount, int type, CommonRestResponse<bool> &response) {
+    void BinanceFuturesRestClient::modify_isolatedPositionMargin(const std::string symbol, const std::string positionSide, double amount, int type, CommonRestResponse<bool> &response) {
         std::string url = this->serverMeta.baseUrl + "/fapi/v1/positionMargin";
 
         binance::CommonRestResponse<std::string> action_response;
@@ -690,7 +690,7 @@ namespace binance {
         }
     }
 
-    void BinanceFuturesRestClient::get_positionRiskV2(std::string &symbol, CommonRestResponse<std::vector<FuturesPositionRisk>> &response) {
+    void BinanceFuturesRestClient::get_positionRiskV2(const std::string symbol, CommonRestResponse<std::vector<FuturesPositionRisk>> &response) {
         std::string url = this->serverMeta.baseUrl + "/fapi/v2/positionRisk";
 
         binance::CommonRestResponse<std::string> action_response;
@@ -744,7 +744,7 @@ namespace binance {
         }
     }
 
-    void BinanceFuturesRestClient::get_tickerPriceV2(std::string &symbol, CommonRestResponse<std::vector<FuturesSymbolPriceTicker>> &response) {
+    void BinanceFuturesRestClient::get_tickerPriceV2(const std::string symbol, CommonRestResponse<std::vector<FuturesSymbolPriceTicker>> &response) {
         std::string url = this->serverMeta.baseUrl + "/fapi/v2/ticker/price";
 
         binance::CommonRestResponse<std::string> action_response;
@@ -784,7 +784,7 @@ namespace binance {
             }
         }
     }
-    void BinanceFuturesRestClient::get_premiumIndex(std::string &symbol, CommonRestResponse<std::vector<FuturesPremiumIndex>> &response) {
+    void BinanceFuturesRestClient::get_premiumIndex(const std::string symbol, CommonRestResponse<std::vector<FuturesPremiumIndex>> &response) {
         std::string url = this->serverMeta.baseUrl + "/fapi/v1/premiumIndex";
 
         binance::CommonRestResponse<std::string> action_response;

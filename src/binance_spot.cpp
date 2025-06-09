@@ -3,7 +3,7 @@
 
 namespace binance {
 
-    void BinanceSpotRestClient::init(const std::string& apiKey, const std::string& secretKey, bool useInternal) {
+    void BinanceSpotRestClient::init(const std::string apiKey, const std::string secretKey, bool useInternal) {
         BinanceRestClient::init(apiKey, secretKey, MarketType::SPOT, useInternal);
     }
 
@@ -41,7 +41,7 @@ namespace binance {
         }
     }
 
-    void BinanceSpotRestClient::get_exchangeInfo(std::vector<std::string>& instIds, CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response) {
+    void BinanceSpotRestClient::get_exchangeInfo(std::vector<std::string> instIds, CommonRestResponse<std::vector<binance::SpotExchangeInfo>> &response) {
         std::string url = this->serverMeta.baseUrl + "/api/v3/exchangeInfo";
         binance::CommonRestResponse<std::string> action_response;
 

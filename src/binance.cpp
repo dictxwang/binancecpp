@@ -2,14 +2,14 @@
 
 namespace binance {
     
-    void BinanceRestClient::setLocalIP(const std::string& localIP) {
+    void BinanceRestClient::setLocalIP(const std::string localIP) {
         this->serverMeta.localIP= localIP;
     }
-    void BinanceRestClient::setRemoteIP(const std::string& remoteIP) {
+    void BinanceRestClient::setRemoteIP(const std::string remoteIP) {
         this->serverMeta.remoteIP = remoteIP;
     }
 
-    void BinanceRestClient::init(const std::string& apiKey, const std::string& secretKey, MarketType marketType, bool useInternal) {
+    void BinanceRestClient::init(const std::string apiKey, const std::string secretKey, MarketType marketType, bool useInternal) {
         this->apiKey = apiKey;
         this->secretKey = secretKey;
         this->marketType = marketType;

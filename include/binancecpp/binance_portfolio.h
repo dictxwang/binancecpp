@@ -21,7 +21,7 @@ namespace binance {
 
     public:
         // Public methods
-        void init(const std::string& apiKey, const std::string& secretKey, bool useInternal = false);
+        void init(const std::string apiKey, const std::string secretKey, bool useInternal = false);
 
         // Some api methods
     

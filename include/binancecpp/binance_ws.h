@@ -3,6 +3,7 @@
 
 #include <string>
 #include <mutex>
+#include <shared_mutex>
 #include "binance.h"
 #include "util/common_tool.h"
 #include "websocket/ws_connection.h"
@@ -139,8 +140,9 @@ namespace binance {
         int socketFd;
         SSL* ssl;
 
-        std::mutex mutex;
-        std::unique_lock<std::mutex> lock;
+        // std::mutex mutex;
+        // std::unique_lock<std::mutex> lock;
+        shared_mutex rw_lock;
 
         ByteBuffer recvBuffer;
         ByteBuffer msgBuffer;

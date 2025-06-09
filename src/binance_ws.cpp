@@ -38,7 +38,7 @@ namespace binance {
         this->isConnected = false;
         this->isLogoned = false;
 
-        this->lock = std::unique_lock<std::mutex>(this->mutex, std::defer_lock);
+        // this->lock = std::unique_lock<std::mutex>(this->mutex, std::defer_lock);
     }
 
     std::pair<bool, string> BinanceWsClient::connect_endpoint(std::string& handshakePath) {
@@ -290,13 +290,14 @@ namespace binance {
             string writeError;
 
             // lock before write data
-            this->lock.lock();
+            std::unique_lock<std::shared_mutex> lock(this->rw_lock);
+            // this->lock.lock();
             try {
                 writeLength = SSL_write(ssl, pong_buf.bytes(), pong_buf.length());
             } catch (std::exception &e) {
                 writeError = e.what();
             }
-            this->lock.unlock();
+            // this->lock.unlock();
             if (writeLength <= 0) {
                 return std::pair<bool, string>(false, "failed to write pong package: " + writeError);
             }
@@ -341,7 +342,8 @@ namespace binance {
 
     void BinanceWsClient::release_resource() {
 
-        this->lock.lock();
+        std::unique_lock<std::shared_mutex> lock(this->rw_lock);
+        // this->lock.lock();
         
         this->recvBuffer.clear();
         this->msgBuffer.clear();
@@ -360,6 +362,6 @@ namespace binance {
         this->isConnected = false;
         this->isLogoned = false;
 
-        this->lock.unlock();
+        // this->lock.unlock();
     }
 }

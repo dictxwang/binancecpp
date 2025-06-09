@@ -254,13 +254,14 @@ namespace binance {
         int writeLength = 0;
         string writeError;
 
-        this->lock.lock();
+        std::unique_lock<std::shared_mutex> lock(this->rw_lock);
+        // this->lock.lock();
         try {
             writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
         } catch (std::exception &e) {
             writeError = e.what();
         }
-        this->lock.unlock();
+        // this->lock.unlock();
 
         if (writeLength <= 0) {
             return std::pair<bool, string>(false, "failed to send place order frame: " + writeError);
@@ -309,13 +310,14 @@ namespace binance {
         int writeLength = 0;
         string writeError;
 
-        this->lock.lock();
+        std::unique_lock<std::shared_mutex> lock(this->rw_lock);
+        // this->lock.lock();
         try {
             writeLength = SSL_write(ssl, messageBuffer.bytes(),  messageBuffer.length());
         } catch (std::exception &e) {
             writeError = e.what();
         }
-        this->lock.unlock();
+        // this->lock.unlock();
         
         if (writeLength <= 0) {
             return std::pair<bool, string>(false, "failed to send cancel order frame: " + writeError);

@@ -119,7 +119,8 @@ namespace binance {
                 delete(this->parsedSecretKey);
             }
             if (this->messageChannel != nullptr) {
-                delete(this->messageChannel);
+                string temp;
+                while (this->messageChannel->try_dequeue(temp)) {}
             }
         }
 
@@ -159,7 +160,8 @@ namespace binance {
         void setRemoteIP(const std::string remoteIP); // call before init
         void setMessageChannel(moodycamel::ConcurrentQueue<std::string> *messageChannel);
         void setMessageCallback(WS_CB customCallback);
-        void stopService();
+        void stop(); // close connection and stop reading loop
+        void free(); // free resources
 
     protected:
         // Protected methods

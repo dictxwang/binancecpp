@@ -69,7 +69,7 @@ namespace binance {
     }
 
     std::pair<bool, string> BinanceWsClient::send_session_logon() {
-        
+
         // TODO If original sessionID is not empty, maybe need logout firstly
 
         // Make payload
@@ -181,7 +181,11 @@ namespace binance {
 
         std::string error;
 
-        while(this->isConnected) {
+        while(true) {
+            if (!this->isConnected) {
+                error = "Has closed by outer handler";
+                break;
+            }
             try {
                 int total_recv_len = 0;
                 int max_buffer_size = 1024;
@@ -274,7 +278,7 @@ namespace binance {
     }
 
     std::pair<bool, string> BinanceWsClient::process_one_message(WebSocketPacket& packet, ByteBuffer& mssageBuffer) {
-        
+
         if (packet.get_opcode() == WebSocketPacket::WSOpcode_Ping) {
             // Handle Ping
             // Send Pong response
@@ -334,34 +338,67 @@ namespace binance {
 \
         return std::pair<bool, string>(true, "");
     }
-    
-    void BinanceWsClient::stopService() {
-        this->isConnected = false;
-        this->release_resource();
-    }
 
-    void BinanceWsClient::release_resource() {
+    void BinanceWsClient::stop() {
 
         std::unique_lock<std::shared_mutex> lock(this->rw_lock);
-        // this->lock.lock();
-        
-        this->recvBuffer.clear();
-        this->msgBuffer.clear();
         if (this->socketFd > 0) {
             try {
                 close(this->socketFd);
+                this->socketFd = 0;
             } catch (std::exception &e) {}
         }
         if (this->ssl != nullptr && SSL_get_shutdown(this->ssl) != SSL_SENT_SHUTDOWN) {
             try {
                 SSL_shutdown(this->ssl);
-                SSL_free(this->ssl);
-                this->ssl = nullptr;
             } catch (std::exception &e) {}
         }
         this->isConnected = false;
         this->isLogoned = false;
+    }
 
-        // this->lock.unlock();
+    void BinanceWsClient::free() {
+
+        std::unique_lock<std::shared_mutex> lock(this->rw_lock);
+        if (this->messageChannel != nullptr) {
+            // clear channel data
+            string temp;
+            while (this->messageChannel->try_dequeue(temp)) {}
+            this->messageChannel = nullptr;
+        }
+        if (this->ssl != nullptr) {
+            SSL_free(this->ssl);
+            this->ssl = nullptr;
+        }
+    }
+
+    void BinanceWsClient::release_resource() {
+
+        this->stop();
+
+        // std::unique_lock<std::shared_mutex> lock(this->rw_lock);
+
+        // if (this->messageChannel != nullptr) {
+        //     // clear channel data
+        //     string gc;
+        //     while (this->messageChannel->try_dequeue(gc)) {}
+        // }
+
+        // this->recvBuffer.clear();
+        // this->msgBuffer.clear();
+        // if (this->socketFd > 0) {
+        //     try {
+        //         close(this->socketFd);
+        //     } catch (std::exception &e) {}
+        // }
+        // if (this->ssl != nullptr && SSL_get_shutdown(this->ssl) != SSL_SENT_SHUTDOWN) {
+        //     try {
+        //         SSL_shutdown(this->ssl);
+        //         // SSL_free(this->ssl);
+        //         // this->ssl = nullptr;
+        //     } catch (std::exception &e) {}
+        // }
+        // this->isConnected = false;
+        // this->isLogoned = false;
     }
 }

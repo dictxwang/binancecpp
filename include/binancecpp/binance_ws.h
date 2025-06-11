@@ -4,6 +4,7 @@
 #include <string>
 #include <mutex>
 #include <shared_mutex>
+#include <memory>
 #include "binance.h"
 #include "util/common_tool.h"
 #include "websocket/ws_connection.h"
@@ -148,7 +149,7 @@ namespace binance {
         ByteBuffer recvBuffer;
         ByteBuffer msgBuffer;
         WS_CB customCallback;
-        moodycamel::ConcurrentQueue<std::string> *messageChannel;
+        shared_ptr<moodycamel::ConcurrentQueue<std::string>> messageChannel;
         std::string sessionID;
 
         bool isConnected;
@@ -158,7 +159,7 @@ namespace binance {
         // Public methods
         void setLocalIP(const std::string localIP); // call before init
         void setRemoteIP(const std::string remoteIP); // call before init
-        void setMessageChannel(moodycamel::ConcurrentQueue<std::string> *messageChannel);
+        void setMessageChannel(shared_ptr<moodycamel::ConcurrentQueue<std::string>> messageChannel);
         void setMessageCallback(WS_CB customCallback);
         void stop(); // close connection and stop reading loop
         void free(); // free resources

@@ -8,7 +8,7 @@ namespace binance {
     void BinanceWsClient::setRemoteIP(const std::string remoteIP) {
         this->remoteIP = remoteIP;
     }
-    void BinanceWsClient::setMessageChannel(moodycamel::ConcurrentQueue<std::string> *messageChannel) {
+    void BinanceWsClient::setMessageChannel(shared_ptr<moodycamel::ConcurrentQueue<std::string>> messageChannel) {
         this->messageChannel = messageChannel;
     }
     void BinanceWsClient::setMessageCallback(WS_CB customCallback) {
@@ -323,7 +323,7 @@ namespace binance {
             } else {
                 // Send json to channel
                 if (this->messageChannel != nullptr) {
-                    bool result = (*this->messageChannel).try_enqueue(messageJson);
+                    bool result = this->messageChannel->try_enqueue(messageJson);
                     if (!result) {
                         std::cout << "can not enqueue item: " << messageJson << std::endl;
                     }

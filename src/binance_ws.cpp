@@ -144,7 +144,7 @@ namespace binance {
             } else {
                 this->sessionID = "";
                 this->isLogoned = false;
-                return std::pair<bool, string> (false, std::string(buffer, len-4));
+                return std::pair<bool, string> (false, "failed to logon: " + std::string(buffer, len-4));
             }
         }
     }

@@ -297,7 +297,7 @@ namespace binance {
         reqJson["params"] = paramsJson;
         std::string payload = serialize_json_value(reqJson);
 
-        std::cout << "cancel order payload: " << payload << std::endl;
+        // std::cout << "cancel order payload: " << payload << std::endl;
 
         WebSocketPacket packet;
         packet.set_fin(1);

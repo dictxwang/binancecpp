@@ -218,8 +218,13 @@ namespace binance {
                         error = "Connection closed by peer (gracefully)";
                         break;
                     } else if (error_code == SSL_ERROR_SYSCALL) {
-                        error = "I/O error occurred: " + std::string(strerror(errno));
-                        break;
+                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                            // Resource temporarily unavailable
+                            continue;
+                        } else {
+                            error = "I/O error occurred: " + std::string(strerror(errno));
+                            break;
+                        }
                     } else if (error_code == SSL_ERROR_SSL) {
                         error = "SSL protocol error: " + std::string(ERR_reason_error_string(ERR_get_error()));
                         break;

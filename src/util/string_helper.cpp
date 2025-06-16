@@ -82,3 +82,11 @@ std::string strHelper::joinStrings(const std::vector<std::string>& strings, cons
     }
     return oss.str();
 }
+
+bool strHelper::startsWith(const std::string& str, const std::string& prefix) {
+      return str.length() >= prefix.length() && str.compare(0, prefix.length(), prefix) == 0;
+}
+
+bool strHelper::endsWith(const std::string& str, const std::string& suffix) {
+    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}

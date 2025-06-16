@@ -32,6 +32,9 @@ public:
     static bool replaceString( std::string& str, const char *from, const char *to);
 
     static std::string boolToString(bool val);
+
+    static bool startsWith(const std::string& str, const std::string& prefix);
+    static bool endsWith(const std::string& str, const std::string& suffix);
 };
 
 

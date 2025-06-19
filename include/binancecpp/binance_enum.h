@@ -38,6 +38,7 @@ namespace binance {
     const string ORDER_SIDE_BUY = "BUY";
     const string ORDER_SIDE_SELL = "SELL";
 
+    const string ORDER_TYPE_MARKET = "MARKET";
     const string ORDER_TYPE_LIMIT = "LIMIT";
     const string ORDER_TYPE_STOP = "STOP";
     const string ORDER_TYPE_STOP_MARKET = "STOP_MARKET";

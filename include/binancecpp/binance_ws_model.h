@@ -67,7 +67,7 @@ namespace binance {
         string rejectReason; // "r" 
         uint64_t id; // "i" order id
         double latestVolume; // "l" quantity for the latest trade
-        double filledVolume; // "z"
+        double filledVolume; // "z" order filled accumulated quantity
         double latestPrice; // "L" price for the latest trade
         string feeAsset; // "N"
         double feeCost; // "n"
@@ -157,7 +157,7 @@ namespace binance {
         string orderStatus; // "X"
         uint64_t id; // "i" order id
         double latestVolume; // "l" quantity for the latest trade
-        double filledVolume; // "z"
+        double filledVolume; // "z" order filled accumulated quantity
         double latestPrice; // "L" price for the latest trade
         string feeAsset; // "N"
         double feeCost; // "n"
